@@ -1,0 +1,46 @@
+name: Автопостинг
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # каждые 15 минут (UTC); GitHub может запускать с опозданием
+  workflow_dispatch:          # кнопка «Run workflow» для ручного запуска
+
+permissions:
+  contents: write             # чтобы сохранять state.sql обратно в репозиторий
+
+concurrency:
+  group: litbot               # не запускать два прохода одновременно
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Проход бота
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python bot.py --once --state state.sql
+
+      - name: Сохранить состояние
+        if: always()
+        run: |
+          git config user.name "litbot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.sql
+          if git diff --cached --quiet; then
+            echo "Состояние не изменилось"
+          else
+            git commit -m "Обновить состояние бота [skip ci]"
+            git pull --rebase --autostash || true
+            git push
+          fi
