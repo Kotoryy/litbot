@@ -17,6 +17,7 @@ import html
 import json
 import logging
 import os
+import re
 import sqlite3
 import sys
 import tempfile
@@ -41,8 +42,12 @@ HELP = """<b>Команды</b>
 /check — проверить сайты прямо сейчас
 /post — опубликовать следующий пост сейчас
 /skip — выбросить следующий пост из очереди
+/digest — показать, каким будет дайджест недели (только вам)
 /pause — остановить публикацию
 /resume — возобновить публикацию"""
+
+# Какие обновления получать от Telegram (реакции — для рейтинга в дайджесте)
+ALLOWED_UPDATES = json.dumps(["message", "callback_query", "message_reaction_count"])
 
 # Ошибки Telegram, при которых дело не в посте, а в доступе к каналу
 CHAT_ERRORS = ("chat not found", "not enough rights", "bot is not a member",
@@ -73,6 +78,12 @@ class Queue:
                 CREATE INDEX IF NOT EXISTS idx_queue_status ON queue(status);
                 CREATE TABLE IF NOT EXISTS state (key TEXT PRIMARY KEY, value TEXT);
             """)
+            # колонки, добавленные позже, — для баз, созданных старой версией
+            cols = {r[1] for r in self.db.execute("PRAGMA table_info(queue)")}
+            for col, decl in (("message_id", "INTEGER"), ("reactions", "INTEGER DEFAULT 0")):
+                if col not in cols:
+                    self.db.execute(f"ALTER TABLE queue ADD COLUMN {col} {decl}")
+            self.db.commit()
 
     def _exec(self, sql: str, params: tuple = ()) -> sqlite3.Cursor:
         with self.lock:
@@ -99,6 +110,19 @@ class Queue:
     def set_status(self, qid: int, status: str) -> None:
         posted = utcnow().isoformat() if status == "posted" else None
         self._exec("UPDATE queue SET status = ?, posted_at = ? WHERE id = ?", (status, posted, qid))
+
+    def set_posted(self, qid: int, message_id: int | None) -> None:
+        self._exec("UPDATE queue SET status = 'posted', posted_at = ?, message_id = ? WHERE id = ?",
+                   (utcnow().isoformat(), message_id, qid))
+
+    def set_reactions(self, message_id: int, count: int) -> None:
+        self._exec("UPDATE queue SET reactions = ? WHERE message_id = ?", (count, message_id))
+
+    def posted_since(self, since: datetime) -> list[sqlite3.Row]:
+        """Опубликованное после since: сначала с большим числом реакций, потом свежее."""
+        return self._exec(
+            "SELECT * FROM queue WHERE status = 'posted' AND posted_at >= ?"
+            " ORDER BY COALESCE(reactions, 0) DESC, posted_at DESC", (since.isoformat(),)).fetchall()
 
     def counts(self) -> dict[str, int]:
         rows = self._exec("SELECT status, COUNT(*) FROM queue GROUP BY status").fetchall()
@@ -153,6 +177,13 @@ class Bot:
         self.queue = Queue(cfg.get("db_path", "seen.sqlite3"))
         self.flt = Filter(cfg)
         self.lead_skip = [Filter._rx(p) for p in cfg.get("lead_skip") or []]
+        self.rubrics = [
+            (r["tag"], re.compile(r["url"]) if r.get("url") else None,
+             [Filter._rx(w) for w in r.get("words") or []], set(r.get("sources") or []))
+            for r in cfg.get("rubrics") or []
+        ]
+        self.max_rubrics = self.tg_cfg.get("max_rubrics", 2)
+        self.digest_cfg = cfg.get("digest") or {}
         self.admins = {int(a) for a in self.bcfg.get("admins") or []}
         self.moderation = bool(self.bcfg.get("moderation", False))
         self.check_every = timedelta(minutes=self.bcfg.get("check_every_min", 60))
@@ -188,21 +219,34 @@ class Bot:
         for admin in self.admins:
             self.reply(admin, text)
 
-    def send_article(self, chat_id: str | int, art: Article, markup: dict | None = None) -> None:
-        """Пост с картинкой, если она есть; при проблемах с картинкой — текстом."""
-        hashtags = self.tg_cfg.get("hashtags", "")
+    def hashtags_for(self, art: Article) -> str:
+        """Рубрики по правилам из config.yaml (ссылка / слова в заголовке / источник) + общие хэштеги."""
+        title = art.title.lower()
+        tags: list[str] = []
+        for tag, url_rx, words, sources in self.rubrics:
+            if len(tags) >= self.max_rubrics:
+                break
+            if tag not in tags and ((url_rx and url_rx.search(art.url))
+                                    or any(w.search(title) for w in words) or art.source in sources):
+                tags.append(tag)
+        return " ".join(tags + [self.tg_cfg.get("hashtags", "")]).strip()
+
+    def send_article(self, chat_id: str | int, art: Article, markup: dict | None = None) -> int | None:
+        """Пост с картинкой, если она есть; при проблемах с картинкой — текстом. Возвращает id сообщения."""
+        hashtags = self.hashtags_for(art)
         extra = {"reply_markup": json.dumps(markup)} if markup else {}
         if self.tg_cfg.get("with_photo", True) and art.image:
             try:
-                self.call("sendPhoto", chat_id=chat_id, photo=art.image, parse_mode="HTML",
-                          caption=render_post(art, hashtags, 1024), **extra)
-                return
+                r = self.call("sendPhoto", chat_id=chat_id, photo=art.image, parse_mode="HTML",
+                              caption=render_post(art, hashtags, 1024), **extra)
+                return (r.get("result") or {}).get("message_id")
             except RuntimeError as exc:
                 if any(e in str(exc).lower() for e in CHAT_ERRORS):
                     raise
                 log.debug("фото не ушло (%s), шлю текстом", exc)
-        self.call("sendMessage", chat_id=chat_id, text=render_post(art, hashtags, 4096),
-                  parse_mode="HTML", disable_web_page_preview="false", **extra)
+        r = self.call("sendMessage", chat_id=chat_id, text=render_post(art, hashtags, 4096),
+                      parse_mode="HTML", disable_web_page_preview="false", **extra)
+        return (r.get("result") or {}).get("message_id")
 
     # ---------- schedule
 
@@ -229,6 +273,9 @@ class Bot:
         if time.monotonic() >= self.next_check and not self.checking.locked():
             self.next_check = time.monotonic() + self.check_every.total_seconds()
             self.start_check()
+
+        if not self.paused() and self.digest_due():
+            self.send_digest()
 
         if (not self.paused() and not self.in_quiet_hours()
                 and time.monotonic() >= self.retry_at and utcnow() >= self.next_post_at()):
@@ -321,7 +368,7 @@ class Bot:
     def post(self, row: sqlite3.Row) -> bool:
         art = row_to_article(row)
         try:
-            self.send_article(self.channel, art)
+            message_id = self.send_article(self.channel, art)
         except requests.RequestException as exc:
             log.warning("Сеть недоступна (%s), повторю через минуту", exc)
             self.retry_at = time.monotonic() + 60
@@ -337,7 +384,7 @@ class Bot:
             self.queue.set_status(row["id"], "failed")
             log.error("Пост не принят Telegram («%s»): %s", art.title, exc)
             return False
-        self.queue.set_status(row["id"], "posted")
+        self.queue.set_posted(row["id"], message_id)
         self.queue.set_state("last_post", utcnow().isoformat())
         log.info("Опубликовано: %s", art.title)
         return True
@@ -345,7 +392,7 @@ class Bot:
     # ---------- updates
 
     def poll(self) -> list[dict]:
-        params = {"timeout": 20, "allowed_updates": json.dumps(["message", "callback_query"])}
+        params = {"timeout": 20, "allowed_updates": ALLOWED_UPDATES}
         if self.offset is not None:
             params["offset"] = self.offset
         try:
@@ -362,6 +409,8 @@ class Bot:
         try:
             if "callback_query" in upd:
                 self.on_callback(upd["callback_query"])
+            elif "message_reaction_count" in upd:
+                self.on_reactions(upd["message_reaction_count"])
             elif (msg := upd.get("message")) and msg.get("text"):
                 self.on_message(msg)
         except Exception:
@@ -398,6 +447,9 @@ class Bot:
                 self.reply(chat, f"Пропущено: {rows[0]['title']}")
             else:
                 self.reply(chat, "Очередь пуста.")
+        elif cmd == "/digest":
+            text = self.digest_text()
+            self.reply(chat, text or "За последнюю неделю опубликовано меньше 3 постов — дайджест не соберётся.")
         elif cmd == "/pause":
             self.queue.set_state("paused", "1")
             self.reply(chat, "⏸ Публикация остановлена. /resume — продолжить.")
@@ -438,6 +490,66 @@ class Bot:
                 self.call("editMessageReplyMarkup", chat_id=msg["chat"]["id"], message_id=msg["message_id"])
             except RuntimeError:
                 pass
+
+    def on_reactions(self, upd: dict) -> None:
+        """Число реакций на пост в канале — для рейтинга в дайджесте."""
+        chat = upd.get("chat") or {}
+        if str(chat.get("id")) != self.channel and f"@{chat.get('username', '')}".lower() != self.channel.lower():
+            return
+        total = sum(r.get("total_count", 0) for r in upd.get("reactions") or [])
+        self.queue.set_reactions(upd["message_id"], total)
+
+    # ---------- weekly digest
+
+    def digest_due(self) -> bool:
+        d = self.digest_cfg
+        if not d.get("enabled"):
+            return False
+        now = datetime.now(self.tz)
+        return (now.isoweekday() == int(d.get("weekday", 7))
+                and now.time() >= dtime.fromisoformat(str(d.get("time", "19:00")))
+                and self.queue.get_state("last_digest") != now.date().isoformat())
+
+    def digest_text(self) -> str | None:
+        """Лучшие посты недели: по реакциям, при равенстве — свежие; не больше per_source с сайта."""
+        d = self.digest_cfg
+        size, per_source = int(d.get("size", 5)), int(d.get("per_source", 2))
+        picked: list[sqlite3.Row] = []
+        by_source: dict[str, int] = {}
+        for row in self.queue.posted_since(utcnow() - timedelta(days=7)):
+            if by_source.get(row["source"], 0) >= per_source:
+                continue
+            picked.append(row)
+            by_source[row["source"]] = by_source.get(row["source"], 0) + 1
+            if len(picked) >= size:
+                break
+        if len(picked) < 3:
+            return None
+
+        e = html.escape
+        today = datetime.now(self.tz)
+        head = (f"<b>{e(d.get('title', '📚 Главное за неделю'))}</b>\n"
+                f"<i>{today - timedelta(days=6):%d.%m} — {today:%d.%m}</i>")
+        items = [f"{i}. <a href=\"{e(r['url'], quote=True)}\">{e(r['title'])}</a> — <i>{e(r['source'])}</i>"
+                 for i, r in enumerate(picked, 1)]
+        return "\n\n".join([head, *items, e(d.get("hashtags", "#дайджест"))])
+
+    def send_digest(self) -> None:
+        today = datetime.now(self.tz).date().isoformat()
+        text = self.digest_text()
+        if not text:
+            log.info("Дайджест: за неделю меньше 3 постов, пропускаю")
+            self.queue.set_state("last_digest", today)
+            return
+        try:
+            self.call("sendMessage", chat_id=self.channel, text=text, parse_mode="HTML",
+                      disable_web_page_preview="true")
+        except (RuntimeError, requests.RequestException) as exc:
+            log.error("Дайджест не отправлен: %s", exc)
+            return
+        self.queue.set_state("last_digest", today)
+        self.queue.set_state("last_post", utcnow().isoformat())  # обычный пост — не сразу следом
+        log.info("Дайджест недели опубликован")
 
     # ---------- texts
 
@@ -505,7 +617,7 @@ class Bot:
 
         # команды и нажатия кнопок, пришедшие с прошлого запуска
         updates = self.call("getUpdates", timeout=0,
-                            allowed_updates=json.dumps(["message", "callback_query"]))["result"]
+                            allowed_updates=ALLOWED_UPDATES)["result"]
         for upd in updates:
             self.handle(upd)
         if updates:  # подтверждаем, чтобы не обработать повторно
@@ -516,6 +628,9 @@ class Bot:
         if (self.force_check or not last_check
                 or utcnow() - datetime.fromisoformat(last_check) >= self.check_every - slack):
             self.check(self.check_reply)
+
+        if not self.paused() and self.digest_due():
+            self.send_digest()
 
         if self.paused():
             log.info("Публикация на паузе")

@@ -87,6 +87,7 @@ INSERT INTO "seen" VALUES('https://gorky.media/fragments/strast-k-malenkim-lions
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_check','2026-09-27T19:32:05.335739+00:00');
 INSERT INTO "state" VALUES('last_post','2026-09-27T19:32:10.797022+00:00');
+INSERT INTO "state" VALUES('last_digest','2026-09-27');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
