@@ -19,6 +19,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # свежий state.sql, даже если запуск ждал в очереди
 
       - uses: actions/setup-python@v5
         with:
