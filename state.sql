@@ -85,9 +85,9 @@ INSERT INTO "seen" VALUES('https://gorky.media/reviews/xorosho-temperirovannyi-c
 INSERT INTO "seen" VALUES('https://gorky.media/context/tsirkach-stixa','циркачстиха','Горький','2026-09-27T14:37:39.938504+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/fragments/strast-k-malenkim-lionskim-sobachkam','страстькмаленькимлионскимсобачкам','Горький','2026-09-27T14:37:39.945247+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
-INSERT INTO "state" VALUES('last_check','2026-09-27T19:32:05.335739+00:00');
 INSERT INTO "state" VALUES('last_post','2026-09-27T19:32:10.797022+00:00');
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
+INSERT INTO "state" VALUES('last_check','2026-09-27T20:32:11.237134+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
