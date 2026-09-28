@@ -64,6 +64,13 @@ INSERT INTO "queue" VALUES(42,'https://godliteratury.ru/articles/2026/09/28/bols
 
 На семинаре эксперты представят лучшие практики продвижения больших книжных проектов и расскажут, как их создают библиотеки, издатели, книготорговцы в партнерстве с другими культурными институциями.','https://glstatic.rg.ru/uploads/images/2026/09/28/bolshie-knizhnye-proekty_zastavka_5e1.jpg','2026-09-28T11:49:00+00:00','ready','2026-09-28T12:31:51.889311+00:00',NULL,NULL,0);
 INSERT INTO "queue" VALUES(43,'https://godliteratury.ru/articles/2026/09/28/v-permi-obrazovali-poeticheskij-treugolnik-dlia-vsego-urala','Год литературы','В Перми образовали поэтический треугольник для всего Урала','По итогам фестиваля «Компрос»-2026 в Перми, как и ожидалось , подписали «Манифест Уральского поэтического треугольника». Под треугольником понимается содружество литераторов трех крупнейших городов Урала, миллионников Перми, Екатеринбурга и Челябинска.','https://glstatic.rg.ru/uploads/images/2026/09/28/pobeditel-slema_447.jpg','2026-09-28T11:35:00+00:00','ready','2026-09-28T12:31:53.164697+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(44,'https://gorky.media/reviews/gesamtkunstwerk-grois','Горький','Gesamtkunstwerk Гройс','Борис Гройс, Светлана Баскова. Гройс о Гройсе. Берлинские беседы со Светланой Басковой. Братислава: Vidim Books, 2026
+
+Время и место действия: Берлин, конец августа — сентябрь 2024 года
+
+Действующие лица: Борис Гройс (род. 1947) и Светлана Баскова (род. 1965)
+
+Он — теоретик искусства, культуролог, философ, один из главных (если не самый главный) теоретизаторов московского концептуализма. В 1981 году из-за риска обвинений в распространении антисоветской пропаганды Гройс был вынужден покинуть Советский Союз и эмигрировать в Европу: сначала в Австрию, а затем в Германию.','https://gorky.media/storage/seo/6f0115a10c2327187a36f44c1ae2e406_large.jpg',NULL,'ready','2026-09-28T13:32:12.982825+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -118,12 +125,13 @@ INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/individu
 INSERT INTO "seen" VALUES('https://gorky.media/context/snesti-steny-vybrosit-instrumenty-v-krapivu','снестистенывыброситьинструментывкрапиву','Горький','2026-09-28T11:31:48.617913+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/bolshaia-kniga-kak-ekosistema-v-riazani-obsudiat-populiarizaciiu-masshtabnyh-knizhnyh-proektov','большаякнигакакэкосистемаврязаниобсудятпопуляризациюмасштабныхкнижныхпроектов','Год литературы','2026-09-28T12:31:51.895663+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/v-permi-obrazovali-poeticheskij-treugolnik-dlia-vsego-urala','впермиобразовалипоэтическийтреугольникдлявсегоурала','Год литературы','2026-09-28T12:31:53.166133+00:00');
+INSERT INTO "seen" VALUES('https://gorky.media/reviews/gesamtkunstwerk-grois','gesamtkunstwerkгройс','Горький','2026-09-28T13:32:12.985722+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-28T12:31:53.167909+00:00');
 INSERT INTO "state" VALUES('last_post','2026-09-28T13:15:44.653639+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T13:32:12.986841+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',43);
+INSERT INTO "sqlite_sequence" VALUES('queue',44);
 COMMIT;
