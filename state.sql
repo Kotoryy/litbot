@@ -46,6 +46,7 @@ INSERT INTO "queue" VALUES(30,'https://gorky.media/fragments/strast-k-malenkim-l
 INSERT INTO "queue" VALUES(31,'https://lgz.ru/article/idealnaya-hrustyashhaya-kapusta-s-pervogo-raza-proverennyj-reczept-ot-vkusvill-kotoryj-rabotaet-bezotkazno/','Литературная газета','Идеальная хрустящая капуста с первого раза: проверенный рецепт от ВкусВилл, который работает безотказно','Как рассказывает нам автор канала «Книги. Издательство АСТ», этот рецепт квашеной капусты от ВкусВилл поможет сделать всё идеально с первого раза. Главное — соблюдать пропорции и следить за процессом, вовремя помогая ему.
 
 На восемь–десять порций берут пятьсот граммов белокочанной капусты, сто граммов моркови, тринадцать граммов соли и чайную ложку сахара. Из этого количества получается восемьсот граммовая банка квашеной капусты, но можно сразу увеличить количество ингредиентов в два или три раза.','https://lgz.ru/upload/opt/2209-1.jpeg','2026-09-27T21:38:47+04:00','ready','2026-09-28T00:31:47.324742+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(32,'https://godliteratury.ru/articles/2026/09/28/genij-ili-zlodej-pavel-basinskij-o-dramaturge-aleksandre-suhovo-kobyline','Год литературы','Гений или злодей? Павел Басинский о драматурге Александре Сухово-Кобылине','Так совпало, что на днях в Доме русского зарубежья мы вручали Литературную премию Александра Солженицына прозаику и эссеисту Владиславу Отрошенко, а именно он является автором лучшей биографии Сухово-Кобылина, недавно вышедшей в издательстве АСТ (Редакция Елены Шубиной) и некоторое время продержавшейся в списках бестселлеров. И едва ли причиной тому был могучий интерес читающей публики к личности Александра Васильевича, чье имя не слишком-то на слуху. Скорее, причиной было качество написанной книги, художественно соединяющей в себе биографию и увлекательное уголовное расследование.','https://glstatic.rg.ru/uploads/images/2026/09/27/image_6ad.png','2026-09-28T01:40:00+00:00','ready','2026-09-28T02:31:49.756862+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -88,12 +89,13 @@ INSERT INTO "seen" VALUES('https://gorky.media/reviews/xorosho-temperirovannyi-c
 INSERT INTO "seen" VALUES('https://gorky.media/context/tsirkach-stixa','циркачстиха','Горький','2026-09-27T14:37:39.938504+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/fragments/strast-k-malenkim-lionskim-sobachkam','страстькмаленькимлионскимсобачкам','Горький','2026-09-27T14:37:39.945247+00:00');
 INSERT INTO "seen" VALUES('https://lgz.ru/article/idealnaya-hrustyashhaya-kapusta-s-pervogo-raza-proverennyj-reczept-ot-vkusvill-kotoryj-rabotaet-bezotkazno','идеальнаяхрустящаякапустаспервогоразапроверенныйрецептотвкусвиллкоторыйработаетб','Литературная газета','2026-09-28T00:31:47.326314+00:00');
+INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/genij-ili-zlodej-pavel-basinskij-o-dramaturge-aleksandre-suhovo-kobyline','генийилизлодейпавелбасинскийодраматургеалександресуховокобылине','Год литературы','2026-09-28T02:31:49.758217+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_post','2026-09-27T19:32:10.797022+00:00');
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-28T01:32:08.933766+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T02:31:49.759310+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',31);
+INSERT INTO "sqlite_sequence" VALUES('queue',32);
 COMMIT;
