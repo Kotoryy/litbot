@@ -59,6 +59,7 @@ INSERT INTO "queue" VALUES(38,'https://lgz.ru/news/predannost-i-predatelstvo/','
 Теперь история, рассказанная С.Козловым на страницах книги, получила экранное воплощение. Режиссёр картины — В. Чигинский, а роли исполнили В.Кищенко, А.Батырев, К.Кутепова, И.Колесников, Е.Гусева, Д.Дюжев и др.','https://lgz.ru/upload/opt/xebosgozn92mtsvq39-zjd_pno6hyidjhns1lihw0hlkj4hwaamitfm9o8bt2_upbrwz11owg0lxgkhppv-fv7r-1.jpeg','2026-09-28T09:04:17+04:00','ready','2026-09-28T09:32:08.501828+00:00',NULL,NULL,0);
 INSERT INTO "queue" VALUES(39,'https://godliteratury.ru/articles/2026/09/28/rgali-pamiati-nikolaia-aleksandrovicha-ravicha','Год литературы','РГАЛИ. Памяти Николая Александровича Равича','Самое удивительное в биографии Николая Равича — то, как он сумел соединить в себе опыт разведчика и дипломата с талантом писателя, а кроме того — переводчика, драматурга, сценариста и историка.','https://glstatic.rg.ru/uploads/images/2026/09/23/7_381.jpg','2026-09-28T10:27:00+00:00','ready','2026-09-28T10:32:10.389921+00:00',NULL,NULL,0);
 INSERT INTO "queue" VALUES(40,'https://godliteratury.ru/articles/2026/09/28/individuum-uhodit-moskovskoe-izdatelstvo-zakryvaetsia-spustia-11-let','Год литературы','Individuum уходит: московское издательство закрывается спустя 11 лет после начала работы','Московское издательство Individuum завершает работу. О решении в социальной сети проекта сообщил главный редактор Алексей Киселёв , назвав произошедшее «внезапным, но не неожиданным». Конкретных причин он не привёл, ограничившись словами благодарности всем, кто участвовал в судьбе издательства — от основателей и авторов до переводчиков, редакторов, дизайнеров, логистов и читателей.','https://glstatic.rg.ru/uploads/images/2026/09/28/bez-nazvaniya-108_202609281231_56570_82c.png','2026-09-28T09:00:00+00:00','ready','2026-09-28T10:32:10.659604+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(41,'https://gorky.media/context/snesti-steny-vybrosit-instrumenty-v-krapivu','Горький','Снести стены, выбросить инструменты в крапиву','— Вы в литературе больше тридцати лет, входили в сочинскую арт-группу «Гильдия красивых», писали стихи, основали поэтическое издательство — и вдруг выпускаете первую книгу малой прозы. В новой книге ваш герой иронично замечает, что поэзия — это необязательный «птичий труд», тогда как проза требует физической тяжести, «будто возишься в канаве с глиной». Почему этот выход в «тяжелый» регистр у вас произошел только сейчас?','https://gorky.media/storage/seo/f4acd033189876e3d7dfaf9dda02496f_large.jpg',NULL,'ready','2026-09-28T11:31:48.616248+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -110,12 +111,13 @@ INSERT INTO "seen" VALUES('https://gorky.media/fragments/nenavidet-ameriku-pravi
 INSERT INTO "seen" VALUES('https://lgz.ru/news/predannost-i-predatelstvo','преданностьипредательство','Литературная газета','2026-09-28T09:32:08.503465+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/rgali-pamiati-nikolaia-aleksandrovicha-ravicha','ргалипамятиниколаяалександровичаравича','Год литературы','2026-09-28T10:32:10.392790+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/individuum-uhodit-moskovskoe-izdatelstvo-zakryvaetsia-spustia-11-let','individuumуходитмосковскоеиздательствозакрываетсяспустя11летпосленачалаработы','Год литературы','2026-09-28T10:32:10.661084+00:00');
+INSERT INTO "seen" VALUES('https://gorky.media/context/snesti-steny-vybrosit-instrumenty-v-krapivu','снестистенывыброситьинструментывкрапиву','Горький','2026-09-28T11:31:48.617913+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-28T10:15:49.415589+00:00');
-INSERT INTO "state" VALUES('last_check','2026-09-28T10:32:10.662494+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T11:31:48.619171+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',40);
+INSERT INTO "sqlite_sequence" VALUES('queue',41);
 COMMIT;
