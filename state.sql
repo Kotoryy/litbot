@@ -43,6 +43,9 @@ INSERT INTO "queue" VALUES(29,'https://gorky.media/context/tsirkach-stixa','Го
 
 О, город родимый! Приморская улица, где я вырастал босяком голоштанным, где ночью одним фонарем караулятся дома и акации, сны и каштаны.','https://gorky.media/storage/seo/6a551631a907f66172689a39eddef7d3_large.jpg',NULL,'ready','2026-09-27T14:37:39.935112+00:00',NULL,NULL,0);
 INSERT INTO "queue" VALUES(30,'https://gorky.media/fragments/strast-k-malenkim-lionskim-sobachkam','Горький','Страсть к маленьким лионским собачкам','После приобретения питомца новому владельцу предстояло кормить животное и заботиться о нем. Франческо Петрарка (1304–1374) был образцом ученого мужа, держащего питомцев, и по его письмам можно составить общее представление о природе владения животными. У него было несколько собак. Первое упоминание о собаке появляется в письме 1338 г. к Джакомо Колонне. В то время Петрарка жил в Воклюзе, и в письме он излагает причины, побуждающие его жить в столь уединенном месте, и говорит, что у него нет спутников, кроме верной собаки и слуг.','https://gorky.media/storage/seo/3740e8702a50d4571e14a02ad1a0a3b3_large.jpg',NULL,'ready','2026-09-27T14:37:39.941678+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(31,'https://lgz.ru/article/idealnaya-hrustyashhaya-kapusta-s-pervogo-raza-proverennyj-reczept-ot-vkusvill-kotoryj-rabotaet-bezotkazno/','Литературная газета','Идеальная хрустящая капуста с первого раза: проверенный рецепт от ВкусВилл, который работает безотказно','Как рассказывает нам автор канала «Книги. Издательство АСТ», этот рецепт квашеной капусты от ВкусВилл поможет сделать всё идеально с первого раза. Главное — соблюдать пропорции и следить за процессом, вовремя помогая ему.
+
+На восемь–десять порций берут пятьсот граммов белокочанной капусты, сто граммов моркови, тринадцать граммов соли и чайную ложку сахара. Из этого количества получается восемьсот граммовая банка квашеной капусты, но можно сразу увеличить количество ингредиентов в два или три раза.','https://lgz.ru/upload/opt/2209-1.jpeg','2026-09-27T21:38:47+04:00','ready','2026-09-28T00:31:47.324742+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -84,12 +87,13 @@ INSERT INTO "seen" VALUES('https://gorky.media/context/realist-fantastiki','ре
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/xorosho-temperirovannyi-chrokodil-knigi-nedeli','хорошотемперированныйчрокодилкнигинедели','Горький','2026-09-27T14:37:39.931801+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/context/tsirkach-stixa','циркачстиха','Горький','2026-09-27T14:37:39.938504+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/fragments/strast-k-malenkim-lionskim-sobachkam','страстькмаленькимлионскимсобачкам','Горький','2026-09-27T14:37:39.945247+00:00');
+INSERT INTO "seen" VALUES('https://lgz.ru/article/idealnaya-hrustyashhaya-kapusta-s-pervogo-raza-proverennyj-reczept-ot-vkusvill-kotoryj-rabotaet-bezotkazno','идеальнаяхрустящаякапустаспервогоразапроверенныйрецептотвкусвиллкоторыйработаетб','Литературная газета','2026-09-28T00:31:47.326314+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_post','2026-09-27T19:32:10.797022+00:00');
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-27T23:31:57.457330+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T00:31:47.327247+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',30);
+INSERT INTO "sqlite_sequence" VALUES('queue',31);
 COMMIT;
