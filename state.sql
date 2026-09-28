@@ -54,6 +54,9 @@ INSERT INTO "queue" VALUES(36,'https://godliteratury.ru/articles/2026/09/27/miha
 
 Премия вручается одному иностранцу и одному представителю от России за достижения в искусстве, сохранение наследия и укрепление культурных связей между народами.','https://glstatic.rg.ru/uploads/images/2026/09/28/11p_ermitag_70c_85e.jpg','2026-09-27T17:11:00+00:00','ready','2026-09-28T08:32:08.609745+00:00',NULL,NULL,0);
 INSERT INTO "queue" VALUES(37,'https://gorky.media/fragments/nenavidet-ameriku-pravilno','Горький','Ненавидеть Америку правильно','В антиамериканских литературных произведениях — советских и зарубежных, старых и новых — нехватки не было. Множество советских довоенных произведений как нельзя лучше подходили для антиамериканской кампании конца 1940-х годов. Поэтому в литературе, в отличие от киноиндустрии, не было необходимости диктовать темы и заказывать новые произведения. В 1949 году Агитпроп предписал эстрадным коллективам и цирковым труппам включить в репертуар «мастеров художественного чтения», а также дал указание самодеятельным театрам сосредоточиться на литературных и музыкальных постановках с антиамериканской…','https://cdn.gorky.media/storage/files/eb99e73b0d1c8ce2eda6cd877e130983_large.jpg',NULL,'ready','2026-09-28T08:32:08.844693+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(38,'https://lgz.ru/news/predannost-i-predatelstvo/','Литературная газета','Преданность и предательство','28 сентября в ЦДЛ состоится спецпоказ исторической драмы «Романовы: преданность и предательство», снятой по одноимённой книге члена Союза писателей России Сергея Козлова.
+
+Теперь история, рассказанная С.Козловым на страницах книги, получила экранное воплощение. Режиссёр картины — В. Чигинский, а роли исполнили В.Кищенко, А.Батырев, К.Кутепова, И.Колесников, Е.Гусева, Д.Дюжев и др.','https://lgz.ru/upload/opt/xebosgozn92mtsvq39-zjd_pno6hyidjhns1lihw0hlkj4hwaamitfm9o8bt2_upbrwz11owg0lxgkhppv-fv7r-1.jpeg','2026-09-28T09:04:17+04:00','ready','2026-09-28T09:32:08.501828+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -102,12 +105,13 @@ INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/naciia-c
 INSERT INTO "seen" VALUES('https://lgz.ru/article/zhelaya-schastya-lyudyam-na-zemle','желаясчастьялюдямназемле','Литературная газета','2026-09-28T07:32:15.785282+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/mihail-shvydkoj-stal-laureatom-ermitazhnoj-premii','михаилшвыдкойсталлауреатомэрмитажнойпремии','Год литературы','2026-09-28T08:32:08.613924+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/fragments/nenavidet-ameriku-pravilno','ненавидетьамерикуправильно','Горький','2026-09-28T08:32:08.846323+00:00');
+INSERT INTO "seen" VALUES('https://lgz.ru/news/predannost-i-predatelstvo','преданностьипредательство','Литературная газета','2026-09-28T09:32:08.503465+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-28T07:15:44.942665+00:00');
-INSERT INTO "state" VALUES('last_check','2026-09-28T08:32:08.847387+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T09:32:08.504684+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',37);
+INSERT INTO "sqlite_sequence" VALUES('queue',38);
 COMMIT;
