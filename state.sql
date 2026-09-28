@@ -47,6 +47,7 @@ INSERT INTO "queue" VALUES(31,'https://lgz.ru/article/idealnaya-hrustyashhaya-ka
 
 На восемь–десять порций берут пятьсот граммов белокочанной капусты, сто граммов моркови, тринадцать граммов соли и чайную ложку сахара. Из этого количества получается восемьсот граммовая банка квашеной капусты, но можно сразу увеличить количество ингредиентов в два или три раза.','https://lgz.ru/upload/opt/2209-1.jpeg','2026-09-27T21:38:47+04:00','ready','2026-09-28T00:31:47.324742+00:00',NULL,NULL,0);
 INSERT INTO "queue" VALUES(32,'https://godliteratury.ru/articles/2026/09/28/genij-ili-zlodej-pavel-basinskij-o-dramaturge-aleksandre-suhovo-kobyline','Год литературы','Гений или злодей? Павел Басинский о драматурге Александре Сухово-Кобылине','Так совпало, что на днях в Доме русского зарубежья мы вручали Литературную премию Александра Солженицына прозаику и эссеисту Владиславу Отрошенко, а именно он является автором лучшей биографии Сухово-Кобылина, недавно вышедшей в издательстве АСТ (Редакция Елены Шубиной) и некоторое время продержавшейся в списках бестселлеров. И едва ли причиной тому был могучий интерес читающей публики к личности Александра Васильевича, чье имя не слишком-то на слуху. Скорее, причиной было качество написанной книги, художественно соединяющей в себе биографию и увлекательное уголовное расследование.','https://glstatic.rg.ru/uploads/images/2026/09/27/image_6ad.png','2026-09-28T01:40:00+00:00','ready','2026-09-28T02:31:49.756862+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(33,'https://godliteratury.ru/articles/2026/09/28/novye-trejlery-russkaia-klassika-goticheskij-miuzikl-i-antiutopiia','Год литературы','Новые трейлеры: русская классика, готический мюзикл и антиутопия','Нас ждет очень интересное кинематографическое завершение года и интересный 2027: осень уже заполнена «Сумерками» и ожиданием новых экранизаций Джейн Остин , запланированы премьеры новых «Отверженных» и киноверсии «Рождественской истории» , все замерли в ожидании последней «Дюны» и очередного спиноффа «Голодных игр» , про зимнюю премьеру «Гарри Поттера» мы уже показывали, но и 2027 год обещает быть интересным.','https://glstatic.rg.ru/uploads/images/2026/09/27/treylery-zahodnye_ee6.jpg','2026-09-28T04:15:00+00:00','ready','2026-09-28T04:32:10.813200+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -90,12 +91,13 @@ INSERT INTO "seen" VALUES('https://gorky.media/context/tsirkach-stixa','цирк
 INSERT INTO "seen" VALUES('https://gorky.media/fragments/strast-k-malenkim-lionskim-sobachkam','страстькмаленькимлионскимсобачкам','Горький','2026-09-27T14:37:39.945247+00:00');
 INSERT INTO "seen" VALUES('https://lgz.ru/article/idealnaya-hrustyashhaya-kapusta-s-pervogo-raza-proverennyj-reczept-ot-vkusvill-kotoryj-rabotaet-bezotkazno','идеальнаяхрустящаякапустаспервогоразапроверенныйрецептотвкусвиллкоторыйработаетб','Литературная газета','2026-09-28T00:31:47.326314+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/genij-ili-zlodej-pavel-basinskij-o-dramaturge-aleksandre-suhovo-kobyline','генийилизлодейпавелбасинскийодраматургеалександресуховокобылине','Год литературы','2026-09-28T02:31:49.758217+00:00');
+INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/28/novye-trejlery-russkaia-klassika-goticheskij-miuzikl-i-antiutopiia','новыетрейлерырусскаяклассикаготическиймюзиклиантиутопия','Год литературы','2026-09-28T04:32:10.814474+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_post','2026-09-27T19:32:10.797022+00:00');
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-28T03:31:48.863009+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T04:32:10.847702+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',32);
+INSERT INTO "sqlite_sequence" VALUES('queue',33);
 COMMIT;
