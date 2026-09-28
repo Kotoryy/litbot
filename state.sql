@@ -133,7 +133,7 @@ INSERT INTO "seen" VALUES('https://kommersant.ru/doc/8988850','рисоваяд�
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-28T16:15:43.400479+00:00');
-INSERT INTO "state" VALUES('last_check','2026-09-28T17:32:17.268967+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-28T18:31:56.042224+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
