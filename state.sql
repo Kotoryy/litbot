@@ -107,6 +107,7 @@ INSERT INTO "queue" VALUES(59,'https://godliteratury.ru/articles/2026/09/29/venk
 INSERT INTO "queue" VALUES(60,'https://godliteratury.ru/articles/2026/09/29/pochemu-smert-ivana-ilicha-tolstogo-vyshla-na-pervoe-mesto-po-prodazham-v-brazilii','Год литературы','Почему «Смерть Ивана Ильича» Толстого вышла на первое место по продажам в Бразилии?','Повесть Льва Толстого «Смерть Ивана Ильича» заняла первое место в рейтинге продаж на бразильском Amazon. Причиной резкого интереса к повести стал видеообзор, который опубликовал полузащитник клуба «Атлетико Минейро», футболист Густаво Скарпа .
 
 В начале сентября 32-летний спортсмен выложил на своем YouTube-канале «Canal do Scarpinha» десятиминутную рецензию на книгу. Ролик быстро набрал более 600 тысяч просмотров. По данным Google Trends, число поисковых запросов по названию повести в Бразилии мгновенно подскочило на 180%, а тиражи в местных книжных магазинах оказались практически распроданы.','https://glstatic.rg.ru/uploads/images/2026/09/29/afisha---2026-04-02t142016669_4b2_af8-2_e7d.png','2026-09-29T15:46:00+00:00','ready','2026-09-29T16:32:17.586608+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(61,'https://lgz.ru/article/ot-perevodchika-s-yaponskogo-do-glavnoj-poetessy-estrady-neveroyatnaya-istoriya-avtora-strannoj-zhenshhiny-i-vospominaniya/','Литературная газета','От переводчика с японского до главной поэтессы эстрады: невероятная история Ларисы Рубальской','Многие известные песни российской эстрады мы помним с детства и легко подпеваем им с первых нот. Авторы популярного блога рассказывают о судьбе Ларисы Рубальской, которая написала около шестисот душевных стихов для главных звезд нашей сцены. На канале «Музыка. История, открытия, мифы» опубликовали статью о жизни поэтессы и ее юбилее. Ознакомьтесь с интересными фактами, изучите историю любимых хитов и узнайте больше о любимом авторе.','https://lgz.ru/upload/opt/2151197528-1.jpeg','2026-09-29T19:57:24+04:00','ready','2026-09-29T23:31:50.564748+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -178,12 +179,13 @@ INSERT INTO "seen" VALUES('https://kommersant.ru/doc/8989683','прочтите�
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/29/andrej-rubanov-snova-zdorovo-poklon-iz-tambova','андрейрубановсноваздоровопоклонизтамбова','Год литературы','2026-09-29T14:32:16.700090+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/29/venki-sonetov-na-nosovyh-platkah-v-peterburge-projdet-iv-forum-kniga-hudozhnika-i-pechatnaia-grafika','венкисонетовнаносовыхплаткахвпетербургепройдетivфорумкнигахудожникаипечатнаяграф','Год литературы','2026-09-29T14:32:17.006921+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/29/pochemu-smert-ivana-ilicha-tolstogo-vyshla-na-pervoe-mesto-po-prodazham-v-brazilii','почемусмертьиванаильичатолстоговышланапервоеместопопродажамвбразилии','Год литературы','2026-09-29T16:32:17.589518+00:00');
+INSERT INTO "seen" VALUES('https://lgz.ru/article/ot-perevodchika-s-yaponskogo-do-glavnoj-poetessy-estrady-neveroyatnaya-istoriya-avtora-strannoj-zhenshhiny-i-vospominaniya','отпереводчикасяпонскогодоглавнойпоэтессыэстрадыневероятнаяисторияларисырубальско','Литературная газета','2026-09-29T23:31:50.566231+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-29T17:01:06.001492+00:00');
-INSERT INTO "state" VALUES('last_check','2026-09-29T22:32:26.087231+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-29T23:31:50.567256+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',60);
+INSERT INTO "sqlite_sequence" VALUES('queue',61);
 COMMIT;
