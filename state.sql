@@ -153,7 +153,7 @@ INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/29/za-zvani
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-29T05:01:11.373722+00:00');
-INSERT INTO "state" VALUES('last_check','2026-09-29T06:31:54.752088+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-29T07:32:11.827205+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
