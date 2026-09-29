@@ -136,8 +136,8 @@ INSERT INTO "seen" VALUES('https://kommersant.ru/doc/8988850','рисоваяд�
 INSERT INTO "seen" VALUES('https://lgz.ru/news/premiya-solzheniczyna-u-otroshenko','премиясолженицынауотрошенко','Литературная газета','2026-09-28T22:32:09.082013+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-29T04:31:50.360274+00:00');
 INSERT INTO "state" VALUES('last_post','2026-09-29T05:01:11.373722+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-29T05:31:46.126299+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
