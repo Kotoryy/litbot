@@ -89,6 +89,7 @@ INSERT INTO "queue" VALUES(49,'https://lgz.ru/article/lg-rejting-35/','Лите�
 INSERT INTO "queue" VALUES(50,'https://godliteratury.ru/articles/2026/09/29/za-zvanie-literaturnogo-flagmana-poboriutsia-vse-regiony-rossii','Год литературы','За звание «Литературного флагмана» поборются все регионы России','В 12-м сезоне Всероссийского конкурса «Самый читающий регион» все 89 субъектов России представили на суд жюри свои лучшие проекты, направленные на поддержку и развитие чтения и литературы. Об этом сообщает пресс-служба Российского книжного союза.
 
 Организаторы отмечают несколько любопытных тенденций этого сезона. Во-первых, заметно окрепло движение за возрождение семейного чтения. . Во-вторых, библиотеки активнее кооперируются с НКО и бизнесом, а инициативы приходят не только из столиц регионов, но и из небольших городов и сел. Многие проекты связаны с созданием современных книжных…','https://glstatic.rg.ru/uploads/images/2026/09/29/bez-nazvaniya-47_965_5a8_195-1_c6b.png','2026-09-29T06:03:00+00:00','ready','2026-09-29T06:31:54.749114+00:00',NULL,NULL,0);
+INSERT INTO "queue" VALUES(51,'https://gorky.media/reviews/martirolog-zalozhnikov-vremeni','Горький','Мартиролог заложников времени','Мария Степанова — поэт, эссеист, прозаик, лауреат премий Андрея Белого, «Московский счет», «Большая книга», нескольких международных премий, автор философско-документального романа «Памяти памяти» — представила свою новую книгу «Перемещенное лицо».','https://cdn.gorky.media/storage/files/877239815e89808a0f907ffbb183316a_large.jpg',NULL,'ready','2026-09-29T08:31:57.534127+00:00',NULL,NULL,0);
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -150,12 +151,13 @@ INSERT INTO "seen" VALUES('https://lgz.ru/news/premiya-solzheniczyna-u-otroshenk
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/29/minprosveshcheniia-razrabatyvaet-zolotoj-standart-knig-dlia-detskih-sadov','минпросвещенияразрабатываетзолотойстандарткнигдлядетскихсадов','Год литературы','2026-09-29T06:31:52.639717+00:00');
 INSERT INTO "seen" VALUES('https://lgz.ru/article/lg-rejting-35','лгрейтинг','Литературная газета','2026-09-29T06:31:54.340287+00:00');
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/29/za-zvanie-literaturnogo-flagmana-poboriutsia-vse-regiony-rossii','зазваниелитературногофлагманапоборютсявсерегионыроссии','Год литературы','2026-09-29T06:31:54.750378+00:00');
+INSERT INTO "seen" VALUES('https://gorky.media/reviews/martirolog-zalozhnikov-vremeni','мартирологзаложниковвремени','Горький','2026-09-29T08:31:57.536095+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-29T07:32:11.827205+00:00');
 INSERT INTO "state" VALUES('last_post','2026-09-29T08:01:09.800758+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-29T08:31:57.537361+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',50);
+INSERT INTO "sqlite_sequence" VALUES('queue',51);
 COMMIT;
