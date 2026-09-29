@@ -165,7 +165,7 @@ INSERT INTO "seen" VALUES('https://lgz.ru/news/puteshestvie-v-izumrudnyj-gorod',
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-29T11:01:07.994058+00:00');
-INSERT INTO "state" VALUES('last_check','2026-09-29T11:31:56.277564+00:00');
+INSERT INTO "state" VALUES('last_check','2026-09-29T12:32:13.822250+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
