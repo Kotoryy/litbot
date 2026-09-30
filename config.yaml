@@ -207,6 +207,29 @@ topics:
 
   culture:
     tag: "#культура"
+    # общая тема: достаётся статье, только если не подошли джаз, классика или литература
+    generic: true
+    # не брать в «культуру» поп- и рок-музыку и светскую хронику
+    exclude:
+      - 're:\bпоп\b'
+      - поп-
+      - рок-
+      - 're:\bрок\b'
+      - рэп
+      - хип-хоп
+      - певиц
+      - певец
+      - певца
+      - клип
+      - альбом
+      - чарт
+      - billboard
+      - клавишник
+      - гитарист
+      - барабанщик
+      - вокалист
+      - мадонн
+      - "тейлор свифт"
     keywords:
       - культур
       - музе
@@ -302,11 +325,6 @@ sources:
   - name: Belcanto.ru
     type: rss
     url: https://www.belcanto.ru/rss/
-    topic: classical
-
-  - name: OperaNews
-    type: rss
-    url: https://www.operanews.ru/rss/
     topic: classical
 
   - name: Музыкальная жизнь
