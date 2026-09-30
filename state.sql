@@ -298,6 +298,7 @@ INSERT INTO "queue" VALUES(158,'https://portal-kultura.ru/articles/news/378993-z
 INSERT INTO "queue" VALUES(159,'https://www.jazz.ru/2026/09/30/jazz-in-native-tongue-6/','Джаз.Ру','Продюсер и музыкант Стас Майнугин: «Джаз на родном языке» — от Рыбинска до Донбасса','Во времена моего детства школьные сочинения на тему «Как я провёл выходные» нередко заканчивали так: «Усталые, но довольные, мы…» Вот и я могу написать эту фразу с чувством выполненного долга и радостью в сердце, потому что всё получилось.','','2026-09-30T18:59:59+00:00','review','2026-09-30T19:32:21.824720+00:00',NULL,NULL,0,'jazz');
 INSERT INTO "queue" VALUES(160,'https://www.mk.ru/culture/2026/09/30/byvshaya-nevesta-pola-makkartni-otkazalas-smotret-kino-o-the-beatles.html','МК — Культура','Бывшая невеста Пола Маккартни отказалась смотреть кино о The Beatles','Эшер встречалась с Полом Маккартни с 1963 по 1968 годы, в 1967-м пара объявил даже о помолвке, но уже в следующем году они расстались. Их отношения станут частью «амбициозного проекта» режиссера Мендеса — цикла из четырех «взаимосвязанных» фильмов, рассказывающих историю группы…','https://static.mk.ru/upload/entities/2026/09/30/21/articles/facebookPicture/3b/14/9d/74/962247173e71f9f010e587c3084c82c0.jpg','2026-09-30T18:28:26+00:00','candidate','2026-09-30T19:32:23.424267+00:00',NULL,NULL,0,'culture');
 INSERT INTO "queue" VALUES(161,'https://www.mk.ru/culture/2026/09/30/viktoriya-bekkhem-reshila-zapisat-s-synom-pesnyu.html','МК — Культура','Виктория Бекхэм решила записать с сыном песню','21-летний Круз Бекхэм (сын Дэвида и Виктории) - музыкант, который выпускает треки и гастролирует со своей группой The Breakers, поделился новостью в социальных сетях в понедельник, 28 сентября. Он опубликовал снимок из студии: на фото он запечатлен в наушниках у микрофона, а…','https://static.mk.ru/upload/entities/2026/09/30/21/articles/facebookPicture/60/83/81/56/552ae37dc5fe7c6dc796a88a48484cfc.jpg','2026-09-30T18:22:38+00:00','candidate','2026-09-30T19:32:23.789215+00:00',NULL,NULL,0,'culture');
+INSERT INTO "queue" VALUES(162,'http://belcanto.ru/26093007.html','Belcanto.ru','Владимир Альтшулер продирижирует «Русалочкой» Цемлинского','29 сентября дирижеру Академического симфонического оркестра Петербургской филармонии, заслуженному артисту России, профессору Владимиру Альтшулеру исполнилось 80 лет.','https://www.belcanto.ru/media/images/publication/altshuller.jpg','2026-09-30T20:30:47+00:00','candidate','2026-09-30T20:33:04.994129+00:00',NULL,NULL,0,'classical');
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -546,6 +547,7 @@ INSERT INTO "seen" VALUES('https://portal-kultura.ru/articles/news/378993-zhenit
 INSERT INTO "seen" VALUES('https://jazz.ru/2026/09/30/jazz-in-native-tongue-6','продюсеримузыкантстасмайнугинджазнародномязыкеотрыбинскадодонбасса','Джаз.Ру','2026-09-30T19:32:21.827751+00:00');
 INSERT INTO "seen" VALUES('https://mk.ru/culture/2026/09/30/byvshaya-nevesta-pola-makkartni-otkazalas-smotret-kino-o-the-beatles.html','бывшаяневестаполамаккартниотказаласьсмотретькинооthebeatles','МК — Культура','2026-09-30T19:32:23.426120+00:00');
 INSERT INTO "seen" VALUES('https://mk.ru/culture/2026/09/30/viktoriya-bekkhem-reshila-zapisat-s-synom-pesnyu.html','викториябекхэмрешилазаписатьссыномпесню','МК — Культура','2026-09-30T19:32:23.790635+00:00');
+INSERT INTO "seen" VALUES('http://belcanto.ru/26093007.html','владимиральтшулерпродирижируетрусалочкойцемлинского','Belcanto.ru','2026-09-30T20:33:04.995612+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-30T17:01:07.645814+00:00');
@@ -554,10 +556,10 @@ INSERT INTO "state" VALUES('registry_errors','{}');
 INSERT INTO "state" VALUES('registry_sizes','{"extremist": 154, "foreign_agents": 329, "undesirable": 140}');
 INSERT INTO "state" VALUES('registry_last','2026-09-30T17:30:57.090358+00:00');
 INSERT INTO "state" VALUES('registry_errors_notified','{}');
-INSERT INTO "state" VALUES('last_check','2026-09-30T19:32:24.382027+00:00');
 INSERT INTO "state" VALUES('moderation','1');
+INSERT INTO "state" VALUES('last_check','2026-09-30T20:33:04.997424+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',161);
+INSERT INTO "sqlite_sequence" VALUES('queue',162);
 COMMIT;
