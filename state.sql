@@ -291,6 +291,8 @@ INSERT INTO "queue" VALUES(153,'https://portal-kultura.ru/articles/news/378991-z
 
 Главный дом теперь выглядит как в 1892 году, в восточном и западном флигелях также отреставрировали фасады и декоративные элементы, передает пресс-служба Мосгорнаследия.','https://portal-kultura.ru/upload/iblock/728/1 (1).jpg','2026-09-30T15:36:02+00:00','review','2026-09-30T16:32:56.979553+00:00',NULL,NULL,0,'culture');
 INSERT INTO "queue" VALUES(154,'https://www.kommersant.ru/doc/8990601','Коммерсантъ — Культура','Выставочный залп // Бельгийские балеты Равеля идут в отечественном кинопрокате','Проект TheatreHD показывает очередную балетную премьеру: вечер-оммаж в честь Мориса Равеля в Королевском театре Фландрии. «Выставку» на музыку «Картинок с выставки» Мусоргского в оркестровке Равеля поставил Сиди Ларби Шеркауи, его молодой коллега Йерун Вербрюгген — равелевскую сюиту «Моя Матушка-Гусыня». По мнению Татьяны Кузнецовой, объединила обе постановки томная, но оправданная дизайнерская роскошь.','https://im2.kommersant.ru/SocialPics/8990601_49_3218655_1769598207','2026-09-30T15:51:02+00:00','review','2026-09-30T16:32:58.661117+00:00',NULL,NULL,0,'classical');
+INSERT INTO "queue" VALUES(155,'https://musicseasons.org/shostakovich-mezhdu-istoriej-i-vechnostyu/','Музыкальные сезоны','Шостакович: между историей и вечностью','Фестивали, посвящённые одному композитору, неизбежно сталкиваются с парадоксом: как говорить о художнике, чьё имя уже само по себе стало частью культурной памяти, не превращая программу в последовательность юбилейных поклонов? Самарский фестиваль «Шостакович. Над временем»…','https://musicseasons.org/wp-content/uploads/2026/09/Shostakovich_BeyondTime_1.jpg','2026-09-30T17:27:00+00:00','candidate','2026-09-30T17:32:21.262704+00:00',NULL,NULL,0,'classical');
+INSERT INTO "queue" VALUES(156,'https://portal-kultura.ru/articles/news/378992-v-moskve-sostoitsya-finalnyy-kontsert-proekta-rodniki-istoki/','Газета «Культура»','В Москве состоится финальный концерт проекта «Родники. Истоки»','Финальный концерт этно-музыкального проекта «Родники. Истоки» пройдет 19 октября на сцене Московского государственного академического театра «Русская песня» Надежды Бабкиной, сообщили в пресс-службе театра.','https://portal-kultura.ru/upload/iblock/202/8da75e15-5d42-44a3-ac38-3d0688b85562.jpg','2026-09-30T16:38:15+00:00','candidate','2026-09-30T17:32:22.205333+00:00',NULL,NULL,0,'culture');
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -532,13 +534,20 @@ INSERT INTO "seen" VALUES('https://theartnewspaper.ru/posts/20260930-owwh','вы
 INSERT INTO "seen" VALUES('https://portal-kultura.ru/articles/news/378988-glubokiy-tyl-pavla-pechenkina-poluchil-gran-pri-kinofestivalya-pobedili-vmeste','глубокийтылпавлапеченкинаполучилгранприкинофестиваляпобедиливместе','Газета «Культура»','2026-09-30T15:32:17.397898+00:00');
 INSERT INTO "seen" VALUES('https://portal-kultura.ru/articles/news/378991-zavershena-restavratsiya-gorodskoy-usadby-v-bolshom-ordynskom-pereulke-moskvy','завершенареставрациягородскойусадьбывбольшомордынскомпереулкемосквы','Газета «Культура»','2026-09-30T16:32:56.980990+00:00');
 INSERT INTO "seen" VALUES('https://kommersant.ru/doc/8990601','выставочныйзалпбельгийскиебалетыравеляидутвотечественномкинопрокате','Коммерсантъ — Культура','2026-09-30T16:32:58.662157+00:00');
+INSERT INTO "seen" VALUES('https://musicseasons.org/shostakovich-mezhdu-istoriej-i-vechnostyu','шостаковичмеждуисториейивечностью','Музыкальные сезоны','2026-09-30T17:32:21.264287+00:00');
+INSERT INTO "seen" VALUES('https://portal-kultura.ru/articles/news/378992-v-moskve-sostoitsya-finalnyy-kontsert-proekta-rodniki-istoki','вмосквесостоитсяфинальныйконцертпроектародникиистоки','Газета «Культура»','2026-09-30T17:32:22.207427+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
-INSERT INTO "state" VALUES('last_check','2026-09-30T16:32:58.663806+00:00');
 INSERT INTO "state" VALUES('last_post','2026-09-30T17:01:07.645814+00:00');
 INSERT INTO "state" VALUES('moderation','1');
+INSERT INTO "state" VALUES('registry_blocked','{}');
+INSERT INTO "state" VALUES('registry_errors','{}');
+INSERT INTO "state" VALUES('registry_sizes','{"extremist": 154, "foreign_agents": 329, "undesirable": 140}');
+INSERT INTO "state" VALUES('registry_last','2026-09-30T17:30:57.090358+00:00');
+INSERT INTO "state" VALUES('registry_errors_notified','{}');
+INSERT INTO "state" VALUES('last_check','2026-09-30T17:32:22.209084+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',154);
+INSERT INTO "sqlite_sequence" VALUES('queue',156);
 COMMIT;
