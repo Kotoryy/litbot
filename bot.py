@@ -31,7 +31,7 @@ from zoneinfo import ZoneInfo
 import requests
 import yaml
 
-from litparser import (Article, Fetcher, Filter, SeenStore, Telegram,
+from litparser import (Article, Fetcher, Filter, SeenStore, Telegram, lead_from_fulltext,
                        find_articles, parse_date, render_post, shorten)
 
 log = logging.getLogger("litbot")
@@ -350,11 +350,14 @@ class Bot:
         """Заменяет анонс сайта первыми абзацами статьи (если так настроено)."""
         if self.tg_cfg.get("summary", "lead") != "lead":
             return
+        limit = self.tg_cfg.get("summary_chars", 600)
         try:
-            lead = fetcher.article_lead(art.url, self.tg_cfg.get("summary_chars", 600), self.lead_skip)
+            lead = fetcher.article_lead(art.url, limit, self.lead_skip)
         except Exception as exc:
             log.debug("не удалось взять текст %s: %s", art.url, exc)
-            return
+            lead = ""
+        if not lead and art.fulltext:  # страница без текста (грузится скриптом) — берём из ленты
+            lead = lead_from_fulltext(art.fulltext, limit, self.lead_skip)
         if lead:
             art.summary = lead
 

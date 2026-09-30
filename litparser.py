@@ -50,6 +50,7 @@ class Article:
     published: datetime | None = None
     score: int = 0
     topic: str = ""
+    fulltext: str = ""   # полный текст из RSS, если есть (не хранится в базе)
 
 
 # ---------------------------------------------------------------- utils
@@ -159,6 +160,18 @@ JUNK_RE = re.compile(
     r"|©|cookie|javascript", re.I)
 
 
+def lead_from_fulltext(text: str, limit: int = 600, skip: list[re.Pattern] = ()) -> str:
+    """Первые абзацы из полного текста ленты (HTML с <p> или простой текст с переносами)."""
+    if "<p" not in text:
+        # блоки <div>/<br> или простой текст → абзацы по переносам строк
+        for tag in ("</div>", "<br>", "<br/>", "<br />"):
+            text = text.replace(tag, tag + "\n")
+        plain = html.unescape(BeautifulSoup(text, "html.parser").get_text())
+        text = "".join(f"<p>{html.escape(re.sub(r'\s+', ' ', line).strip())}</p>"
+                       for line in re.split(r"\n\s*\n|\n(?=\S)", plain) if line.strip())
+    return extract_lead(f"<div>{text}</div>", limit, skip)
+
+
 def extract_lead(raw_html: bytes | str, limit: int = 600, skip: list[re.Pattern] = ()) -> str:
     soup = BeautifulSoup(raw_html, "html.parser")
     for tag in soup(["script", "style", "noscript", "nav", "header", "footer", "aside",
@@ -221,7 +234,10 @@ def collect_rss(src: dict, fetcher: Fetcher) -> list[Article]:
                     image = enc.get("href", "")
                     break
         summary = clean_text(e.get("summary", "") or e.get("description", ""))
-        items.append(Article(src["name"], clean_text(e.title), e.link, summary, image, published))
+        # полный текст, если лента его отдаёт (content:encoded, yandex:full-text)
+        fulltext = e.get("yandex_full-text", "") or (e.get("content") or [{}])[0].get("value", "")
+        items.append(Article(src["name"], clean_text(e.title), e.link, summary, image, published,
+                             fulltext=fulltext))
     return items
 
 
