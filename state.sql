@@ -539,13 +539,13 @@ INSERT INTO "seen" VALUES('https://portal-kultura.ru/articles/news/378992-v-mosk
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-30T17:01:07.645814+00:00');
-INSERT INTO "state" VALUES('moderation','1');
 INSERT INTO "state" VALUES('registry_blocked','{}');
 INSERT INTO "state" VALUES('registry_errors','{}');
 INSERT INTO "state" VALUES('registry_sizes','{"extremist": 154, "foreign_agents": 329, "undesirable": 140}');
 INSERT INTO "state" VALUES('registry_last','2026-09-30T17:30:57.090358+00:00');
 INSERT INTO "state" VALUES('registry_errors_notified','{}');
 INSERT INTO "state" VALUES('last_check','2026-09-30T17:32:22.209084+00:00');
+INSERT INTO "state" VALUES('moderation','1');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
