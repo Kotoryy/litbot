@@ -282,7 +282,7 @@ class Bot:
     def next_post_at(self) -> datetime:
         last = self.last_post()
         # ещё ни одного поста — можно публиковать сразу
-        return last + self.post_every if last else datetime.min.replace(tzinfo=timezone.utc)
+        return last + self.post_every if last else datetime(2000, 1, 1, tzinfo=timezone.utc)
 
     def tick(self) -> None:
         if time.monotonic() >= self.next_check and not self.checking.locked():
