@@ -1,0 +1,43 @@
+# текущие источники
+https://godliteratury.ru/rss
+https://gorky.media/
+https://prochtenie.org/
+https://textura.club/feed/
+https://formasloff.ru/feed
+https://lgz.ru/rss/
+https://www.colta.ru/rss
+https://knife.media/feed/
+https://www.kommersant.ru/RSS/section-culture.xml
+https://lenta.ru/rss/articles/culture
+# классическая музыка
+https://www.classicalmusicnews.ru/feed/
+https://www.operanews.ru/rss/
+https://muzlifemagazine.ru/feed/
+https://www.meloman.ru/rss/
+https://www.belcanto.ru/rss.xml
+https://www.belcanto.ru/rss/
+https://muzobozrenie.ru/feed/
+https://www.mariinsky.ru/ru/rss/
+https://bolshoi.ru/rss/
+https://www.mmdm.ru/rss/
+https://www.philharmonia.spb.ru/rss/
+https://musicseasons.org/feed/
+# джаз
+https://www.jazz.ru/feed/
+https://jazz.ru/feed/
+https://jazzpeople.ru/feed/
+https://jazzquad.ru/feed/
+# культура
+https://portal-kultura.ru/rss/
+https://rg.ru/xml/index.xml
+https://tass.ru/rss/v2.xml
+https://ria.ru/export/rss2/archive/index.xml
+https://www.interfax.ru/rss.asp
+https://iz.ru/xml/rss/all.xml
+https://www.mk.ru/rss/culture/index.xml
+https://www.gazeta.ru/export/rss/lenta.xml
+https://www.vedomosti.ru/rss/rubric/lifestyle
+https://www.teatral-online.ru/rss/
+https://www.theartnewspaper.ru/rss/
+https://www.culture.ru/rss
+https://www.ng.ru/rss/
