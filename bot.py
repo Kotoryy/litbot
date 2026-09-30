@@ -23,6 +23,7 @@ import sys
 import tempfile
 import threading
 import time
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from datetime import time as dtime
 from pathlib import Path
@@ -31,6 +32,7 @@ from zoneinfo import ZoneInfo
 import requests
 import yaml
 
+import registry
 from litparser import (Article, Fetcher, Filter, SeenStore, Telegram, lead_from_fulltext,
                        find_articles, parse_date, render_post, shorten)
 
@@ -43,6 +45,7 @@ HELP = """<b>Команды</b>
 /post — опубликовать следующий пост сейчас
 /skip — выбросить следующий пост из очереди
 /digest — показать, каким будет дайджест недели (только вам)
+/registry — проверка источников по реестрам (иноагенты, нежелательные, экстремистские)
 /pause — остановить публикацию
 /resume — возобновить публикацию"""
 
@@ -132,13 +135,31 @@ class Queue:
         return {r[0]: r[1] for r in rows}
 
     def trim(self, keep: int) -> int:
-        """Оставляет в очереди не больше keep самых свежих статей каждой темы."""
+        """Оставляет не больше keep самых свежих статей каждой темы (в очереди и среди кандидатов)."""
         return self._exec(
             "UPDATE queue SET status = 'dropped' WHERE id IN ("
-            " SELECT id FROM (SELECT id, ROW_NUMBER() OVER (PARTITION BY COALESCE(topic, '')"
-            "   ORDER BY COALESCE(published, added_at) DESC) AS n FROM queue WHERE status = 'ready')"
+            " SELECT id FROM (SELECT id, ROW_NUMBER() OVER (PARTITION BY COALESCE(topic, ''), status"
+            "   ORDER BY COALESCE(published, added_at) DESC) AS n FROM queue"
+            "   WHERE status IN ('ready', 'candidate'))"
             " WHERE n > ?)", (keep,)
         ).rowcount
+
+    def count_by_topic(self, statuses: tuple[str, ...]) -> dict[str, int]:
+        marks = ",".join("?" * len(statuses))
+        rows = self._exec(f"SELECT COALESCE(topic, ''), COUNT(*) FROM queue WHERE status IN ({marks})"
+                          " GROUP BY COALESCE(topic, '')", statuses).fetchall()
+        return {r[0]: r[1] for r in rows}
+
+    def candidates(self, topic: str, limit: int) -> list[sqlite3.Row]:
+        """Кандидаты на модерацию: самые свежие статьи темы."""
+        return self._exec(
+            "SELECT * FROM queue WHERE status = 'candidate' AND COALESCE(topic, '') = ?"
+            " ORDER BY COALESCE(published, added_at) DESC LIMIT ?", (topic, limit)).fetchall()
+
+    def block_source(self, source: str) -> int:
+        """Снимает с публикации всё неопубликованное из источника."""
+        return self._exec("UPDATE queue SET status = 'blocked' WHERE source = ?"
+                          " AND status IN ('ready', 'candidate', 'review')", (source,)).rowcount
 
     def last_posted_by_topic(self) -> dict[str, str]:
         rows = self._exec("SELECT COALESCE(topic, ''), MAX(posted_at) FROM queue"
@@ -148,7 +169,8 @@ class Queue:
     def prune(self, days: int) -> None:
         """Удаляет давние записи, чтобы база не росла бесконечно."""
         cutoff = (utcnow() - timedelta(days=days)).isoformat()
-        self._exec("DELETE FROM queue WHERE status NOT IN ('ready', 'review') AND added_at < ?", (cutoff,))
+        self._exec("DELETE FROM queue WHERE status NOT IN ('ready', 'review', 'candidate')"
+                   " AND added_at < ?", (cutoff,))
         try:
             self._exec("DELETE FROM seen WHERE added_at < ?", (cutoff,))
         except sqlite3.OperationalError:  # таблицы seen ещё нет
@@ -196,6 +218,9 @@ class Bot:
         # сколько дней статья может ждать в очереди (у джаза новости редкие — нужен запас)
         self.queue_max_age = self.bcfg.get("max_age_in_queue_days", 7)
         self.digest_cfg = cfg.get("digest") or {}
+        self.registry_cfg = cfg.get("registry_check") or {}
+        # сколько статей каждой темы держать у админа на одобрении (вместе с одобренными)
+        self.review_per_topic = (cfg.get("bot") or {}).get("review_per_topic", 3)
         self.admins = {int(a) for a in self.bcfg.get("admins") or []}
         self.moderation = bool(self.bcfg.get("moderation", False))
         self.check_every = timedelta(minutes=self.bcfg.get("check_every_min", 60))
@@ -250,6 +275,8 @@ class Bot:
         """Пост с картинкой, если она есть; при проблемах с картинкой — текстом. Возвращает id сообщения."""
         hashtags = self.hashtags_for(art)
         extra = {"reply_markup": json.dumps(markup)} if markup else {}
+        # текст под заголовком — не длиннее summary_chars (в очереди могут быть статьи со старым лимитом)
+        art = replace(art, summary=shorten(art.summary, self.tg_cfg.get("summary_chars", 600)))
         if self.tg_cfg.get("with_photo", True) and art.image:
             try:
                 r = self.call("sendPhoto", chat_id=chat_id, photo=art.image, parse_mode="HTML",
@@ -307,13 +334,91 @@ class Bot:
         threading.Thread(target=self.check, args=(reply_to,), daemon=True).start()
         return True
 
+    # ---------- registries
+
+    def blocked_sources(self) -> dict[str, list]:
+        """Источники, найденные в реестрах (кроме подтверждённых вручную registry_ok)."""
+        found = json.loads(self.queue.get_state("registry_blocked") or "{}")
+        ok = {s["name"] for s in self.cfg["sources"] if s.get("registry_ok")}
+        return {name: hits for name, hits in found.items() if name not in ok}
+
+    def maybe_check_registry(self, force: bool = False) -> None:
+        if not self.registry_cfg.get("enabled", True):
+            return
+        last = self.queue.get_state("registry_last")
+        every = timedelta(hours=self.registry_cfg.get("every_hours", 24))
+        if not force and last and utcnow() - datetime.fromisoformat(last) < every:
+            return
+        log.info("Проверяю источники по реестрам…")
+        matches, errors, sizes = registry.check_sources(self.cfg["sources"])
+        before = json.loads(self.queue.get_state("registry_blocked") or "{}")
+        # список не загрузился — прежние результаты по нему не сбрасываем
+        for name, hits in before.items():
+            kept = [h for h in hits if h[0] in errors]
+            if kept and name not in matches:
+                matches[name] = kept
+        self.queue.set_state("registry_blocked", json.dumps(matches, ensure_ascii=False))
+        self.queue.set_state("registry_errors", json.dumps(errors, ensure_ascii=False))
+        self.queue.set_state("registry_sizes", json.dumps(sizes))
+        self.queue.set_state("registry_last", utcnow().isoformat())
+
+        ok = {s["name"] for s in self.cfg["sources"] if s.get("registry_ok")}
+        for name, hits in matches.items():
+            if name in ok:
+                continue
+            removed = self.queue.block_source(name)
+            if name not in before:
+                lines = "\n".join(f"• {html.escape(registry.LIST_NAMES[k])}: {html.escape(e[:200])}"
+                                  for k, e in hits[:5])
+                log.warning("Источник «%s» найден в реестрах — отключён", name)
+                self.notify_admins(
+                    f"🚫 <b>Источник «{html.escape(name)}» отключён</b>: он найден в списках\n{lines}\n\n"
+                    f"Снято с публикации статей: {removed}. Если это ошибка, проверьте по официальному "
+                    f"реестру и добавьте источнику <code>registry_ok: true</code> в config.yaml.")
+        for name in before.keys() - matches.keys():
+            self.notify_admins(f"✅ Источник «{html.escape(name)}» больше не найден в реестрах — снова включён.")
+        if errors and errors.keys() != json.loads(self.queue.get_state("registry_errors_notified") or "{}").keys():
+            self.notify_admins("⚠️ Не удалось загрузить списки для проверки источников:\n" + "\n".join(
+                f"• {html.escape(registry.LIST_NAMES[k])}: {html.escape(v)}" for k, v in errors.items())
+                + "\nИсточники по ним сейчас не проверяются — проверьте вручную или дождитесь следующей проверки.")
+        self.queue.set_state("registry_errors_notified", json.dumps(errors))
+
+    def registry_text(self) -> str:
+        last = self.queue.get_state("registry_last")
+        if not last:
+            return "Проверка по реестрам ещё не проводилась."
+        sizes = json.loads(self.queue.get_state("registry_sizes") or "{}")
+        errors = json.loads(self.queue.get_state("registry_errors") or "{}")
+        blocked = self.blocked_sources()
+        when = datetime.fromisoformat(last).astimezone(self.tz).strftime("%d.%m %H:%M")
+        lines = [f"<b>Проверка по реестрам</b> — {when}", ""]
+        for key, name in registry.LIST_NAMES.items():
+            state = f"ошибка: {html.escape(errors[key])}" if key in errors else f"{sizes.get(key, 0)} записей"
+            lines.append(f"• {name}: {state}")
+        lines.append("")
+        if blocked:
+            lines.append("🚫 Отключены: " + ", ".join(html.escape(n) for n in blocked))
+        else:
+            lines.append(f"✅ Ни один из {len(self.cfg['sources'])} источников не найден в списках.")
+        lines.append("\nСписки иноагентов и нежелательных организаций берутся из Википедии "
+                     "(официальный реестр Минюста недоступен с сервера бота) — это не юридическая гарантия.")
+        return "\n".join(lines)
+
+    # ---------- parsing
+
     def check(self, reply_to: int | None) -> None:
         with self.checking:
+            try:
+                self.maybe_check_registry()
+            except Exception:
+                log.exception("Ошибка проверки по реестрам")
             log.info("Проверяю источники…")
             try:
                 store = SeenStore(self.cfg.get("db_path", "seen.sqlite3"))
                 fetcher = Fetcher(self.cfg.get("request_delay", 1.0))
-                articles = find_articles(self.cfg, store, fetcher, self.flt)
+                blocked = self.blocked_sources()
+                cfg = dict(self.cfg, sources=[s for s in self.cfg["sources"] if s["name"] not in blocked])
+                articles = find_articles(cfg, store, fetcher, self.flt)
                 # берём не больше max_queue на тему (важно при первом запуске); find_articles
                 # уже чередует источники, свежие первыми, — остальное просто запоминаем
                 keep, per_topic = set(), {}
@@ -326,14 +431,14 @@ class Bot:
                     qid = None
                     if id(art) in keep:
                         self.add_lead(art, fetcher)
-                        qid = self.queue.add(art, "review" if self.moderation else "ready")
+                        qid = self.queue.add(art, "candidate" if self.moderation else "ready")
                     store.mark(art)
                     if qid:
                         added += 1
-                        if self.moderation:
-                            self.send_review(qid, art)
                 store.db.close()
                 dropped = self.queue.trim(self.max_queue)
+                if self.moderation:
+                    self.fill_reviews()
                 self.queue.set_state("last_check", utcnow().isoformat())
                 msg = f"Проверка завершена: новых статей {added}"
                 if dropped:
@@ -361,17 +466,45 @@ class Bot:
         if lead:
             art.summary = lead
 
-    def send_review(self, qid: int, art: Article) -> None:
+    def send_review(self, qid: int, art: Article) -> bool:
         markup = {"inline_keyboard": [[
             {"text": "✅ В очередь", "callback_data": f"ok:{qid}"},
             {"text": "⚡ Сейчас", "callback_data": f"now:{qid}"},
             {"text": "❌ Пропустить", "callback_data": f"no:{qid}"},
         ]]}
+        sent = False
         for admin in self.admins:
             try:
                 self.send_article(admin, art, markup)
+                sent = True
             except Exception as exc:
                 log.warning("не удалось отправить на модерацию %s: %s", admin, exc)
+        return sent
+
+    def fill_reviews(self) -> None:
+        """Держит у админа на одобрении по review_per_topic статей каждой темы.
+
+        Одобренные, но ещё не вышедшие, тоже считаются — новые кандидаты приходят
+        по мере того, как посты публикуются или пропускаются.
+        """
+        if not self.admins:
+            return
+        busy = self.queue.count_by_topic(("review", "ready"))
+        blocked = self.blocked_sources()
+        for topic in self.queue.count_by_topic(("candidate",)):
+            need = self.review_per_topic - busy.get(topic, 0)
+            if need <= 0:
+                continue
+            for row in self.queue.candidates(topic, need + 5):
+                if need <= 0:
+                    break
+                art = row_to_article(row)
+                if row["source"] in blocked or self.flt.too_old(art, self.queue_max_age):
+                    self.queue.set_status(row["id"], "dropped")
+                    continue
+                if self.send_review(row["id"], art):
+                    self.queue.set_status(row["id"], "review")
+                    need -= 1
 
     # ---------- posting
 
@@ -485,6 +618,8 @@ class Bot:
                 self.reply(chat, f"Пропущено: {rows[0]['title']}")
             else:
                 self.reply(chat, "Очередь пуста.")
+        elif cmd == "/registry":
+            self.reply(chat, self.registry_text())
         elif cmd == "/digest":
             text = self.digest_text()
             self.reply(chat, text or "За последнюю неделю опубликовано меньше 3 постов — дайджест не соберётся.")
@@ -509,6 +644,9 @@ class Bot:
             answer("Нет доступа")
             return
         action, _, qid = cq.get("data", "").partition(":")
+        if action == "done":  # нажали на отметку «уже решено»
+            answer("Уже обработано")
+            return
         row = self.queue.get(int(qid)) if qid.isdigit() else None
         if not row or row["status"] != "review":
             answer("Уже обработано")
@@ -521,13 +659,19 @@ class Bot:
         elif action == "no":
             self.queue.set_status(row["id"], "skipped")
             answer("Пропущено")
-        # убираем кнопки с сообщения
+        # вместо кнопок — отметка, что решено
+        label = {"ok": "✅ В очереди", "now": "⚡ Опубликовано", "no": "❌ Пропущено"}.get(action, "Обработано")
+        if row and row["status"] != "review":
+            label = "Уже обработано"
         msg = cq.get("message")
         if msg:
             try:
-                self.call("editMessageReplyMarkup", chat_id=msg["chat"]["id"], message_id=msg["message_id"])
+                self.call("editMessageReplyMarkup", chat_id=msg["chat"]["id"], message_id=msg["message_id"],
+                          reply_markup=json.dumps({"inline_keyboard": [[{"text": label, "callback_data": "done"}]]}))
             except RuntimeError:
                 pass
+        if self.moderation and action == "no":
+            self.fill_reviews()  # взамен пропущенной — следующую
 
     def on_reactions(self, upd: dict) -> None:
         """Число реакций на пост в канале — для рейтинга в дайджесте."""
@@ -601,13 +745,17 @@ class Bot:
             f"Канал: {self.channel}",
             f"Модерация: {'вкл' if self.moderation else 'выкл'}",
             "",
-            f"В очереди: {c.get('ready', 0)}"
-            + (f" · на модерации: {c.get('review', 0)}" if self.moderation else ""),
+            f"В очереди (одобрено): {c.get('ready', 0)}" if self.moderation else f"В очереди: {c.get('ready', 0)}",
+            *([f"Ждут вашего решения: {c.get('review', 0)} · ещё кандидатов: {c.get('candidate', 0)}"]
+              if self.moderation else []),
             f"Опубликовано всего: {c.get('posted', 0)}",
             "",
             "Последняя проверка: " + (local(datetime.fromisoformat(last_check)) if last_check else "ещё не было")
             + (" (идёт сейчас)" if self.checking.locked() else ""),
             "Последний пост: " + (local(last) if last else "ещё не было"),
+            "Реестры: " + ("ещё не проверялись" if not self.queue.get_state("registry_last")
+                           else ("🚫 отключены " + ", ".join(self.blocked_sources())) if self.blocked_sources()
+                           else "источники не найдены в списках") + " (подробно — /registry)",
         ]
         if not self.paused() and c.get("ready"):
             nxt = max(self.next_post_at(), utcnow())
@@ -644,6 +792,14 @@ class Bot:
                         "Напишите боту /start, он пришлёт ваш id.")
         if self.moderation and not self.admins:
             log.warning("Модерация включена, но админов нет — статьи некому одобрять.")
+        # модерацию включили/выключили: неодобренное переводим в нужное состояние
+        was = self.queue.get_state("moderation") == "1"
+        if self.moderation and not was:
+            n = self.queue._exec("UPDATE queue SET status = 'candidate' WHERE status = 'ready'").rowcount
+            log.info("Модерация включена: %d статей из очереди ждут одобрения", n)
+        elif not self.moderation and was:
+            self.queue._exec("UPDATE queue SET status = 'ready' WHERE status IN ('candidate', 'review')")
+        self.queue.set_state("moderation", "1" if self.moderation else "0")
 
     def run(self) -> None:
         self.startup()
@@ -671,6 +827,8 @@ class Bot:
         if (self.force_check or not last_check
                 or utcnow() - datetime.fromisoformat(last_check) >= self.check_every - slack):
             self.check(self.check_reply)
+        elif self.moderation:
+            self.fill_reviews()
 
         if not self.paused() and self.digest_due():
             self.send_digest()
