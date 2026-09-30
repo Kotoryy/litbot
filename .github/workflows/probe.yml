@@ -1,7 +1,7 @@
 name: Проверка лент (временная)
 on:
   push:
-    paths: ["probe/urls.txt", ".github/workflows/probe.yml"]
+    branches: [topics-test]
 permissions:
   contents: write
 jobs:
@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12", cache: pip}
       - run: pip install -r requirements.txt
-      - run: python probe/probe.py | tee probe/result.txt
+      - run: python probe/dryrun.py | tee probe/result.txt
       - run: |
           git config user.name "litbot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

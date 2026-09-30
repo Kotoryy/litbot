@@ -49,6 +49,7 @@ class Article:
     image: str = ""
     published: datetime | None = None
     score: int = 0
+    topic: str = ""
 
 
 # ---------------------------------------------------------------- utils
@@ -239,7 +240,9 @@ def collect_html(src: dict, fetcher: Fetcher, limit: int = 20) -> list[Article]:
 
 class Filter:
     def __init__(self, cfg: dict):
-        self.keywords = [self._rx(k) for k in cfg.get("keywords", [])]
+        # темы: {имя: [регулярки]}; порядок в конфиге = приоритет при равном счёте
+        topics = cfg.get("topics") or {"": {"keywords": cfg.get("keywords", [])}}
+        self.topics = {name: [self._rx(k) for k in t.get("keywords") or []] for name, t in topics.items()}
         self.exclude = [self._rx(k) for k in cfg.get("exclude", [])]
         self.min_score = cfg.get("min_score", 1)
         self.max_age = timedelta(days=cfg.get("max_age_days", 3))
@@ -253,17 +256,48 @@ class Filter:
         # иначе совпадение с начала слова: «роман» найдёт «романа», но не «экстраромантик»
         return re.compile(r"(?<!\w)" + re.escape(word))
 
-    def score(self, art: Article) -> int:
+    def excluded(self, art: Article) -> bool:
         text = f"{art.title} {art.summary}".lower()
-        if any(rx.search(text) for rx in self.exclude):
-            return -1
-        return sum(len(rx.findall(text)) for rx in self.keywords)
+        return any(rx.search(text) for rx in self.exclude)
 
-    def too_old(self, art: Article) -> bool:
-        return art.published is not None and datetime.now(timezone.utc) - art.published > self.max_age
+    def classify(self, art: Article, allowed: list[str] | None = None) -> tuple[str, int]:
+        """Самая подходящая тема и её счёт (число совпадений ключевых слов)."""
+        text = f"{art.title} {art.summary}".lower()
+        best, best_score = "", 0
+        for name, rxs in self.topics.items():
+            if allowed and name not in allowed:
+                continue
+            score = sum(len(rx.findall(text)) for rx in rxs)
+            if score > best_score:
+                best, best_score = name, score
+        return best, best_score
+
+    def too_old(self, art: Article, days: float | None = None) -> bool:
+        limit = timedelta(days=days) if days else self.max_age
+        return art.published is not None and datetime.now(timezone.utc) - art.published > limit
 
 
 # ---------------------------------------------------------------- pipeline
+
+def accept(art: Article, src: dict, flt: Filter) -> bool:
+    """Решает, брать ли статью, и проставляет ей тему.
+
+    topic: X          — профильный сайт: всё подряд, тема X
+    filter: true      — только если нашлись ключевые слова какой-то темы (из topics, если задан список)
+    fallback_topic: X — вместе с filter: не совпавшее тоже брать, с темой X
+    """
+    if not src.get("filter", False):
+        art.topic = src.get("topic", "")
+        art.score = flt.classify(art)[1]
+        return True
+    art.topic, art.score = flt.classify(art, src.get("topics"))
+    if art.score >= src.get("min_score", flt.min_score):
+        return True
+    if src.get("fallback_topic"):
+        art.topic = src["fallback_topic"]
+        return True
+    return False
+
 
 def find_articles(cfg: dict, store: SeenStore, fetcher: Fetcher, flt: Filter) -> list[Article]:
     by_source: dict[str, list[Article]] = {}
@@ -296,12 +330,9 @@ def find_articles(cfg: dict, store: SeenStore, fetcher: Fetcher, flt: Filter) ->
                 if store.is_seen(art):
                     continue
 
-            if flt.too_old(art):
+            if flt.too_old(art, src.get("max_age_days")) or flt.excluded(art):
                 continue
-            art.score = flt.score(art)
-            if art.score < 0:
-                continue
-            if src.get("filter", True) and art.score < src.get("min_score", flt.min_score):
+            if not accept(art, src, flt):
                 continue
 
             # картинку ищем только для прошедших фильтр

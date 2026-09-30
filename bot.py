@@ -80,9 +80,11 @@ class Queue:
             """)
             # колонки, добавленные позже, — для баз, созданных старой версией
             cols = {r[1] for r in self.db.execute("PRAGMA table_info(queue)")}
-            for col, decl in (("message_id", "INTEGER"), ("reactions", "INTEGER DEFAULT 0")):
+            for col, decl in (("message_id", "INTEGER"), ("reactions", "INTEGER DEFAULT 0"), ("topic", "TEXT")):
                 if col not in cols:
                     self.db.execute(f"ALTER TABLE queue ADD COLUMN {col} {decl}")
+            if "topic" not in cols:  # до появления тем бот писал только о литературе
+                self.db.execute("UPDATE queue SET topic = 'literature'")
             self.db.commit()
 
     def _exec(self, sql: str, params: tuple = ()) -> sqlite3.Cursor:
@@ -94,9 +96,10 @@ class Queue:
     def add(self, art: Article, status: str) -> int | None:
         cur = self._exec(
             "INSERT OR IGNORE INTO queue (url, source, title, summary, image, published,"
-            " status, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            " status, added_at, topic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (art.url, art.source, art.title, art.summary, art.image,
-             art.published.isoformat() if art.published else None, status, utcnow().isoformat()),
+             art.published.isoformat() if art.published else None, status, utcnow().isoformat(),
+             art.topic),
         )
         return cur.lastrowid if cur.rowcount else None
 
@@ -129,12 +132,18 @@ class Queue:
         return {r[0]: r[1] for r in rows}
 
     def trim(self, keep: int) -> int:
-        """Оставляет в очереди не больше keep самых свежих статей."""
+        """Оставляет в очереди не больше keep самых свежих статей каждой темы."""
         return self._exec(
             "UPDATE queue SET status = 'dropped' WHERE id IN ("
-            " SELECT id FROM queue WHERE status = 'ready'"
-            " ORDER BY COALESCE(published, added_at) DESC LIMIT -1 OFFSET ?)", (keep,)
+            " SELECT id FROM (SELECT id, ROW_NUMBER() OVER (PARTITION BY COALESCE(topic, '')"
+            "   ORDER BY COALESCE(published, added_at) DESC) AS n FROM queue WHERE status = 'ready')"
+            " WHERE n > ?)", (keep,)
         ).rowcount
+
+    def last_posted_by_topic(self) -> dict[str, str]:
+        rows = self._exec("SELECT COALESCE(topic, ''), MAX(posted_at) FROM queue"
+                          " WHERE status = 'posted' GROUP BY COALESCE(topic, '')").fetchall()
+        return {r[0]: r[1] for r in rows}
 
     def prune(self, days: int) -> None:
         """Удаляет давние записи, чтобы база не росла бесконечно."""
@@ -155,7 +164,7 @@ class Queue:
 
 def row_to_article(row: sqlite3.Row) -> Article:
     return Article(row["source"], row["title"], row["url"], row["summary"] or "",
-                   row["image"] or "", parse_date(row["published"] or ""))
+                   row["image"] or "", parse_date(row["published"] or ""), topic=row["topic"] or "")
 
 
 def parse_quiet(raw: str | None) -> tuple[dtime, dtime] | None:
@@ -183,6 +192,9 @@ class Bot:
             for r in cfg.get("rubrics") or []
         ]
         self.max_rubrics = self.tg_cfg.get("max_rubrics", 2)
+        self.topic_tags = {name: t.get("tag", "") for name, t in (cfg.get("topics") or {}).items()}
+        # сколько дней статья может ждать в очереди (у джаза новости редкие — нужен запас)
+        self.queue_max_age = self.bcfg.get("max_age_in_queue_days", 7)
         self.digest_cfg = cfg.get("digest") or {}
         self.admins = {int(a) for a in self.bcfg.get("admins") or []}
         self.moderation = bool(self.bcfg.get("moderation", False))
@@ -220,16 +232,19 @@ class Bot:
             self.reply(admin, text)
 
     def hashtags_for(self, art: Article) -> str:
-        """Рубрики по правилам из config.yaml (ссылка / слова в заголовке / источник) + общие хэштеги."""
+        """Хэштег темы + рубрики по правилам из config.yaml (ссылка / слова в заголовке / источник)."""
         title = art.title.lower()
-        tags: list[str] = []
+        topic_tag = self.topic_tags.get(art.topic, "")
+        tags: list[str] = [topic_tag] if topic_tag else []
+        limit = self.max_rubrics + len(tags)
         for tag, url_rx, words, sources in self.rubrics:
-            if len(tags) >= self.max_rubrics:
+            if len(tags) >= limit:
                 break
             if tag not in tags and ((url_rx and url_rx.search(art.url))
                                     or any(w.search(title) for w in words) or art.source in sources):
                 tags.append(tag)
-        return " ".join(tags + [self.tg_cfg.get("hashtags", "")]).strip()
+        extra = self.tg_cfg.get("hashtags", "")
+        return " ".join(tags + ([extra] if extra and extra not in tags else [])).strip()
 
     def send_article(self, chat_id: str | int, art: Article, markup: dict | None = None) -> int | None:
         """Пост с картинкой, если она есть; при проблемах с картинкой — текстом. Возвращает id сообщения."""
@@ -299,9 +314,13 @@ class Bot:
                 store = SeenStore(self.cfg.get("db_path", "seen.sqlite3"))
                 fetcher = Fetcher(self.cfg.get("request_delay", 1.0))
                 articles = find_articles(self.cfg, store, fetcher, self.flt)
-                # берём не больше max_queue (важно при первом запуске); find_articles уже
-                # чередует источники, свежие первыми, — остальное просто запоминаем
-                keep = {id(a) for a in articles[: self.max_queue]}
+                # берём не больше max_queue на тему (важно при первом запуске); find_articles
+                # уже чередует источники, свежие первыми, — остальное просто запоминаем
+                keep, per_topic = set(), {}
+                for a in articles:
+                    if per_topic.get(a.topic, 0) < self.max_queue:
+                        keep.add(id(a))
+                        per_topic[a.topic] = per_topic.get(a.topic, 0) + 1
                 added = 0
                 for art in articles:
                     qid = None
@@ -353,12 +372,28 @@ class Bot:
 
     # ---------- posting
 
+    def upcoming(self) -> list[sqlite3.Row]:
+        """Очередь в порядке публикации: темы по кругу (дольше всех не выходившая — первой),
+        внутри темы — в порядке поступления."""
+        rows = self.queue.ready(1000)
+        last = self.queue.last_posted_by_topic()
+        by_topic: dict[str, list[sqlite3.Row]] = {}
+        for r in rows:
+            by_topic.setdefault(r["topic"] or "", []).append(r)
+        order = sorted(by_topic, key=lambda t: last.get(t) or "")
+        result: list[sqlite3.Row] = []
+        while any(by_topic.values()):
+            for t in order:
+                if by_topic[t]:
+                    result.append(by_topic[t].pop(0))
+        return result
+
     def post_next(self) -> bool:
-        """Публикует первую пригодную статью из очереди. True — если что-то ушло."""
-        while rows := self.queue.ready(1):
+        """Публикует следующую пригодную статью из очереди. True — если что-то ушло."""
+        while rows := self.upcoming()[:1]:
             row = rows[0]
             art = row_to_article(row)
-            if self.flt.too_old(art):
+            if self.flt.too_old(art, self.queue_max_age):
                 self.queue.set_status(row["id"], "dropped")
                 log.info("Устарело, пропускаю: %s", art.title)
                 continue
@@ -441,7 +476,7 @@ class Bot:
         elif cmd == "/post":
             self.reply(chat, "Опубликовано ✅" if self.post_next() else "Не получилось: очередь пуста или ошибка (см. лог).")
         elif cmd == "/skip":
-            rows = self.queue.ready(1)
+            rows = self.upcoming()[:1]
             if rows:
                 self.queue.set_status(rows[0]["id"], "skipped")
                 self.reply(chat, f"Пропущено: {rows[0]['title']}")
@@ -580,12 +615,17 @@ class Bot:
         return "\n".join(lines)
 
     def queue_text(self) -> str:
-        rows = self.queue.ready(10)
+        rows = self.upcoming()
         if not rows:
             return "Очередь пуста. /check — поискать новое."
-        items = [f"{i}. <i>{html.escape(r['source'])}</i> — {html.escape(shorten(r['title'], 90))}"
-                 for i, r in enumerate(rows, 1)]
-        return "<b>Ближайшие посты</b>\n" + "\n".join(items)
+        per_topic: dict[str, int] = {}
+        for r in rows:
+            tag = self.topic_tags.get(r["topic"] or "", "") or "без темы"
+            per_topic[tag] = per_topic.get(tag, 0) + 1
+        items = [f"{i}. {self.topic_tags.get(r['topic'] or '', '')} <i>{html.escape(r['source'])}</i> — "
+                 f"{html.escape(shorten(r['title'], 90))}" for i, r in enumerate(rows[:10], 1)]
+        summary = " · ".join(f"{t} {n}" for t, n in per_topic.items())
+        return f"<b>Ближайшие посты</b>\nВ очереди: {summary}\n\n" + "\n".join(items)
 
     # ---------- main loop
 

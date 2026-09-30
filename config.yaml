@@ -21,9 +21,10 @@ telegram:
   chat_id: "@ltrtr_club"
   # Прикреплять картинку статьи (og:image), если есть
   with_photo: true
-  # Хэштеги в конце каждого поста (после рубрик, см. rubrics ниже)
-  hashtags: "#литература"
-  # Сколько рубрик максимум ставить одному посту
+  # Хэштег темы (#литература, #классика…) ставится сам — см. topics ниже.
+  # Здесь — хэштеги, которые нужны в конце каждого поста (можно оставить пустым)
+  hashtags: ""
+  # Сколько рубрик максимум ставить одному посту (кроме хэштега темы)
   max_rubrics: 2
   # Пауза между сообщениями (сек)
   send_delay: 3
@@ -61,7 +62,17 @@ rubrics:
   - tag: "#поэзия"
     words: [стих, поэз, поэт]
   - tag: "#премии"
-    words: [преми, лауреат, шорт-лист, лонг-лист, букер, нобелевск, нацбест]
+    words: ['re:\bпреми(я|и|ю|ей|ях|ям|ями)\b', лауреат, шорт-лист, лонг-лист, букер, нобелевск, нацбест, «золотая маска»]
+  - tag: "#опера"
+    words: ['re:\bопер(а|ы|у|е|ой|ах|ами|ный|ная|ное|ного|ной|ном|ные|ных|ную|ным)\b', оперетт]
+  - tag: "#балет"
+    words: [балет]
+  - tag: "#театр"
+    words: [театр, спектакл, режиссер, режиссёр]
+  - tag: "#кино"
+    words: [кино, фильм, сериал, экраниз]
+  - tag: "#искусство"
+    words: [художник, живопис, выставк, музе, скульптур, галере]
   - tag: "#события"
     words: [ярмарк, фестивал, выставк, презентаци, форум, встреч, встрет, событи]
   - tag: "#эссе"
@@ -98,45 +109,123 @@ bot:
   timezone: "Europe/Moscow"
   # true — новые статьи сначала приходят админам с кнопками «В очередь / Сейчас / Пропустить»
   moderation: false
-  # Максимум статей в очереди: лишние (самые старые) отбрасываются
-  max_queue: 30
+  # Максимум статей в очереди на каждую тему: лишние (самые старые) отбрасываются
+  max_queue: 15
+  # Сколько дней статья может ждать в очереди, потом считается устаревшей
+  max_age_in_queue_days: 7
 
-# Ключевые слова (корни, регистр не важен). Используются для
-# источников с filter: true — общих новостных лент.
-keywords:
-  - литератур
-  - книг
-  - книжн
-  - роман
-  - повест
-  - 're:рассказ(ы|а|ов|ах|ом|ами|е)?\b'   # не ловит «рассказывает»
-  - писател
-  - писательниц
-  - поэт
-  - поэз
-  - стихотвор
-  - проза
-  - прозаик
-  - издательств
-  - переводчик
-  - литпреми
-  - букер
-  - нобелевск
-  - "нацбест"
-  - "большая книга"
-  - "ясная поляна"
-  - библиотек
-  - читател
-  - non/fiction
-  - бестселлер
-  - классик
-  - Пушкин
-  - Толстой
-  - Достоевск
-  - Чехов
-  - Гоголь
-  - Набоков
-  - Булгаков
+# Темы канала. У каждой — хэштег и ключевые слова (начала слов, регистр не важен,
+# или 're:регулярка'). Ключевые слова нужны для источников с filter: true:
+# статья получает ту тему, чьих слов в заголовке и анонсе нашлось больше.
+# При равенстве побеждает тема, которая выше в списке.
+topics:
+  jazz:
+    tag: "#джаз"
+    keywords:
+      - джаз
+      - jazz
+      - свинг
+      - саксофон
+      - биг-бэнд
+      - биг-бенд
+      - бутман
+      - колтрейн
+      - армстронг
+      - эллингтон
+
+  classical:
+    tag: "#классика"
+    keywords:
+      - филармони
+      - симфони
+      - оркестр
+      - дирижер
+      - дирижёр
+      - композитор
+      - консерватори
+      - пианист
+      - скрипач
+      - виолончел
+      - органн
+      - 're:\bопер(а|ы|у|е|ой|ах|ами|ный|ная|ное|ного|ной|ном|ные|ных|ную|ным)\b'
+      - балет
+      - 're:(классическ|академическ)\w* музык'
+      - 're:больш\w+ театр'
+      - мариинск
+      - чайковск
+      - рахманинов
+      - шостакович
+      - прокофьев
+      - мусоргск
+      - корсаков
+      - глинк
+      - стравинск
+      - скрябин
+      - свиридов
+      - гергиев
+      - башмет
+      - мацуев
+      - спиваков
+      - курентзис
+      - юровск
+
+  literature:
+    tag: "#литература"
+    keywords:
+      - литератур
+      - книг
+      - книжн
+      - роман
+      - повест
+      - 're:рассказ(ы|а|ов|ах|ом|ами|е)?\b'   # не ловит «рассказывает»
+      - писател
+      - писательниц
+      - поэт
+      - поэз
+      - стихотвор
+      - проза
+      - прозаик
+      - издательств
+      - переводчик
+      - литпреми
+      - букер
+      - нобелевск
+      - "нацбест"
+      - "большая книга"
+      - "ясная поляна"
+      - библиотек
+      - читател
+      - non/fiction
+      - бестселлер
+      - Пушкин
+      - Толстой
+      - Достоевск
+      - Чехов
+      - Гоголь
+      - Набоков
+      - Булгаков
+
+  culture:
+    tag: "#культура"
+    keywords:
+      - культур
+      - музе
+      - выставк
+      - театр
+      - спектакл
+      - режиссер
+      - режиссёр
+      - фильм
+      - кино
+      - сериал
+      - художник
+      - живопис
+      - скульптур
+      - архитектур
+      - фестивал
+      - премьер
+      - галере
+      - искусств
 
 # Если встречается любое из этих слов — статья отбрасывается
 exclude:
@@ -145,39 +234,58 @@ exclude:
   - "книга жалоб"
   - "книжка-раскладушка"
   - промокод
+  # светская хроника из общих культурных лент
+  - блогер
+  - рэпер
+  - тикток
+  - реалити
+  - развод
+  - беременн
+  - похудел
+  - "стал отцом"
+  - "стала матерью"
 
-# Сколько совпадений с keywords нужно для прохождения фильтра
+# Сколько совпадений ключевых слов нужно источникам с filter: true
 min_score: 1
 
+# Источники. Варианты:
+#   topic: X            — профильный сайт: берём всё, тема X
+#   filter: true        — берём только статьи, где нашлись ключевые слова темы
+#     topics: [a, b]    — …только этих тем
+#     fallback_topic: X — …а не совпавшие тоже берём, с темой X
+#     min_score: N      — сколько совпадений нужно (по умолчанию min_score выше)
+#   max_age_days: N     — для редко пишущих сайтов: брать статьи до N дней
 sources:
-  # --- Профильные литературные сайты (фильтр не нужен) ---
+  # --- Литература ---
   - name: Год литературы
     type: rss
     url: https://godliteratury.ru/rss
-    filter: false
+    topic: literature
 
   - name: Горький
     type: html
     url: https://gorky.media/
     # регулярка для ссылок на статьи на странице
     link_pattern: '^https://gorky\.media/(reviews|context|fragments|intervyu)/[^/]+/?$'
-    filter: false
+    topic: literature
 
   - name: Прочтение
     type: html
     url: https://prochtenie.org/
     link_pattern: '^https://prochtenie\.org/(reviews|experiments|texts|interview)/\d+'
-    filter: false
+    topic: literature
 
   - name: Textura
     type: rss
     url: https://textura.club/feed/
-    filter: false
+    topic: literature
+    max_age_days: 7
 
   - name: Формаслов
     type: rss
     url: https://formasloff.ru/feed
-    filter: false
+    topic: literature
+    max_age_days: 7
 
   - name: Литературная газета
     type: rss
@@ -185,34 +293,87 @@ sources:
     filter: true
     min_score: 2   # много нелитературных новостей
 
-  # --- Общие/культурные издания (фильтруем по ключевым словам) ---
+  # --- Классическая музыка ---
+  - name: ClassicalMusicNews
+    type: rss
+    url: https://www.classicalmusicnews.ru/feed/
+    topic: classical
+
+  - name: Belcanto.ru
+    type: rss
+    url: https://www.belcanto.ru/rss/
+    topic: classical
+
+  - name: OperaNews
+    type: rss
+    url: https://www.operanews.ru/rss/
+    topic: classical
+
+  - name: Музыкальная жизнь
+    type: rss
+    url: https://muzlifemagazine.ru/feed/
+    filter: true          # бывают новости поп-музыки
+    topics: [classical, jazz]
+    max_age_days: 5
+
+  - name: Музыкальные сезоны
+    type: rss
+    url: https://musicseasons.org/feed/
+    topic: classical
+    max_age_days: 7
+
+  # --- Джаз ---
+  - name: Джаз.Ру
+    type: rss
+    url: https://www.jazz.ru/feed/
+    topic: jazz
+    max_age_days: 7
+
+  - name: JazzPeople
+    type: rss
+    url: https://jazzpeople.ru/feed/
+    topic: jazz
+    max_age_days: 7
+
+  # --- Культура (музыка и литература отсюда получают свои темы) ---
+  - name: Газета «Культура»
+    type: rss
+    url: https://portal-kultura.ru/rss/
+    filter: true
+    fallback_topic: culture
+
+  - name: The Art Newspaper Russia
+    type: rss
+    url: https://www.theartnewspaper.ru/rss/
+    topic: culture
+
+  - name: Коммерсантъ — Культура
+    type: rss
+    url: https://www.kommersant.ru/RSS/section-culture.xml
+    filter: true
+    fallback_topic: culture
+
+  - name: МК — Культура
+    type: rss
+    url: https://www.mk.ru/rss/culture/index.xml
+    filter: true
+    fallback_topic: culture
+
+  - name: Лента — Культура
+    type: rss
+    url: https://lenta.ru/rss/articles/culture
+    filter: true
+    fallback_topic: culture
+
   - name: Кольта
     type: rss
     url: https://www.colta.ru/rss
     filter: true
+    min_score: 2   # много текстов об обществе и политике
+    max_age_days: 7
 
   - name: Нож
     type: rss
     url: https://knife.media/feed/
     filter: true
     min_score: 2
-
-  - name: Коммерсантъ — Культура
-    type: rss
-    url: https://www.kommersant.ru/RSS/section-culture.xml
-    filter: true
-
-  - name: Лента — Культура
-    type: rss
-    url: https://lenta.ru/rss/articles/culture
-    filter: true
-
-  # --- Англоязычные (раскомментируйте при желании) ---
-  # - name: The Guardian Books
-  #   type: rss
-  #   url: https://www.theguardian.com/books/rss
-  #   filter: false
-  # - name: Literary Hub
-  #   type: rss
-  #   url: https://lithub.com/feed/
-  #   filter: false
