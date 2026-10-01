@@ -238,7 +238,7 @@ INSERT INTO "queue" VALUES(128,'https://www.kommersant.ru/doc/8990401','Комм
 INSERT INTO "queue" VALUES(129,'http://belcanto.ru/26093003.html','Belcanto.ru','8-й Международный фестиваль «Мариинский — Владикавказ»','С 30 сентября по 3 октября в четырех кавказских городах состоится VIII Международный фестиваль «Мариинский — Владикавказ».','https://www.belcanto.ru/media/images/publication/26093005.jpg','2026-09-30T11:46:17+00:00','candidate','2026-09-30T12:32:50.865312+00:00',NULL,NULL,0,'classical');
 INSERT INTO "queue" VALUES(130,'https://portal-kultura.ru/articles/news/378984-v-manezhe-pokazali-kollektsii-pobediteley-konkursa-imeni-nadezhdy-lamanovoy/','Газета «Культура»','В Манеже показали коллекции победителей конкурса имени Надежды Ламановой','В рамках Московской недели моды прошел показ победителей Международного конкурса молодых дизайнеров к 165-летию Надежды Ламановой.
 
-В конкурсе участвовали более тысячи дизайнеров от 18 до 35 лет из России, стран СНГ, Китая, Бразилии, Африки, Индии и Италии. Участники, не копируя работы мастера, переосмыслили её принципы и создали современные вещи с использованием узоров, тканей и декора от локальных производителей. Организаторами выступили «Энтайер Филм Студио» и фонд Rendez-Vous.','https://portal-kultura.ru/upload/iblock/361/SEB_1497.jpg','2026-09-30T12:28:27+00:00','candidate','2026-09-30T12:32:51.187851+00:00',NULL,NULL,0,'culture');
+В конкурсе участвовали более тысячи дизайнеров от 18 до 35 лет из России, стран СНГ, Китая, Бразилии, Африки, Индии и Италии. Участники, не копируя работы мастера, переосмыслили её принципы и создали современные вещи с использованием узоров, тканей и декора от локальных производителей. Организаторами выступили «Энтайер Филм Студио» и фонд Rendez-Vous.','https://portal-kultura.ru/upload/iblock/361/SEB_1497.jpg','2026-09-30T12:28:27+00:00','dropped','2026-09-30T12:32:51.187851+00:00',NULL,NULL,0,'culture');
 INSERT INTO "queue" VALUES(131,'https://portal-kultura.ru/articles/news/378983-vo-vladivostoke-zavershilis-xi-dni-ermitazha/','Газета «Культура»','Во Владивостоке завершились XI Дни Эрмитажа','С 21 по 27 сентября 2026 года во Владивостоке прошли XI Дни Эрмитажа.
 
 Программа включала теоретические и практические занятия «Эрмитажной школы реставрации», а также проекты «Эрмитажный лекторий» и «Эрмитажная библиотека».
@@ -302,6 +302,7 @@ INSERT INTO "queue" VALUES(162,'http://belcanto.ru/26093007.html','Belcanto.ru',
 INSERT INTO "queue" VALUES(163,'https://lgz.ru/news/nastupaet-moskovskaya-osen/','Литературная газета','Наступает «Московская осень»','В Большом зале Московской консерватории 3 октября начнётся «Московская осень». 46-й международный фестиваль представит музыку современных авторов — от произведений, связанных с классической традицией, до смелых жанровых экспериментов, сообщает радио «Орфей».','https://lgz.ru/upload/opt/d90ac524.jpeg','2026-10-01T00:11:34+04:00','candidate','2026-09-30T21:32:27.612130+00:00',NULL,NULL,0,'classical');
 INSERT INTO "queue" VALUES(164,'https://lenta.ru/articles/2026/10/01/v-rossii-snyali-esche-odnu-ekranizatsiyu-strugatskih/','Лента — Культура','Москва — столица всего мира в новом сериале «Полдень». Почему эту экранизацию Стругацких нужно увидеть?','В онлайн-кинотеатрах Okko и «Кион» — премьера сериала «Полдень» по мотивам повести братьев Стругацких «Жук в муравейнике». Как себя показала уже вторая за сезон экранизация творчества легендарных фантастов, почему сай-фай утопии обречены выглядеть зловеще и как…','https://icdn.lenta.ru/images/2026/09/30/11/20260930110434609/pic_d2d84cd5bfa5037dd4531bd5cdf4c85e.jpg','2026-09-30T21:01:21+00:00','candidate','2026-09-30T21:32:27.950030+00:00',NULL,NULL,0,'literature');
 INSERT INTO "queue" VALUES(165,'https://muzlifemagazine.ru/aleksandr-sladkovskiy-prodirizhirova/','Музыкальная жизнь','Александр Сладковский продирижировал сочинениями Стравинского, Боттезини и Шостаковича в Бари','26 сентября в Театре Петруцелли в итальянском городе Бари местный Симфонический оркестр сыграл программу под управлением известного российского дирижера Александра Сладковского.','https://muzlifemagazine.ru/wp-content/uploads/2026/10/Sladkovskiy1.jpg','2026-09-30T23:35:07+00:00','candidate','2026-10-01T00:32:05.008685+00:00',NULL,NULL,0,'classical');
+INSERT INTO "queue" VALUES(166,'https://www.kommersant.ru/doc/8990926','Коммерсантъ — Культура','Sotheby''s выставит на торги коллекцию с редкими работами ван Гога и Сезанна','Аукционный дом Sotheby''s выставит на торги 12 картин художников-импрессионистов и модернистов XIX-XX веков. Работы хранились в собрании аргентинского коллекционера Нелли Арриеты де Блакье, скончавшейся в 2020 году.','https://iv.kommersant.ru/SocialPics/8990926_49_0_2036088190','2026-10-01T01:42:59+00:00','candidate','2026-10-01T02:32:10.922290+00:00',NULL,NULL,0,'culture');
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -554,6 +555,7 @@ INSERT INTO "seen" VALUES('http://belcanto.ru/26093007.html','владимира
 INSERT INTO "seen" VALUES('https://lgz.ru/news/nastupaet-moskovskaya-osen','наступаетмосковскаяосень','Литературная газета','2026-09-30T21:32:27.614541+00:00');
 INSERT INTO "seen" VALUES('https://lenta.ru/articles/2026/10/01/v-rossii-snyali-esche-odnu-ekranizatsiyu-strugatskih','москвастолицавсегомиравновомсериалеполденьпочемуэтуэкранизациюстругацкихнужноуви','Лента — Культура','2026-09-30T21:32:27.952560+00:00');
 INSERT INTO "seen" VALUES('https://muzlifemagazine.ru/aleksandr-sladkovskiy-prodirizhirova','александрсладковскийпродирижировалсочинениямистравинскогоботтезиниишостаковичавб','Музыкальная жизнь','2026-10-01T00:32:05.010730+00:00');
+INSERT INTO "seen" VALUES('https://kommersant.ru/doc/8990926','sothebysвыставитнаторгиколлекциюсредкимиработамивангогаисезанна','Коммерсантъ — Культура','2026-10-01T02:32:10.924952+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-30T17:01:07.645814+00:00');
@@ -562,10 +564,10 @@ INSERT INTO "state" VALUES('registry_errors','{}');
 INSERT INTO "state" VALUES('registry_sizes','{"extremist": 154, "foreign_agents": 329, "undesirable": 140}');
 INSERT INTO "state" VALUES('registry_last','2026-09-30T17:30:57.090358+00:00');
 INSERT INTO "state" VALUES('registry_errors_notified','{}');
-INSERT INTO "state" VALUES('last_check','2026-10-01T01:32:06.723599+00:00');
 INSERT INTO "state" VALUES('moderation','1');
+INSERT INTO "state" VALUES('last_check','2026-10-01T02:32:10.926942+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',165);
+INSERT INTO "sqlite_sequence" VALUES('queue',166);
 COMMIT;
