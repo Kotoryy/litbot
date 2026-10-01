@@ -209,7 +209,7 @@ INSERT INTO "queue" VALUES(115,'https://portal-kultura.ru/articles/news/378980-s
 INSERT INTO "queue" VALUES(116,'https://www.theartnewspaper.ru/posts/20260930-mxoo/','The Art Newspaper Russia','Ювелиров ждут в «Царицыно»','При этом организаторы установили ряд ограничений. К участию не допускаются изделия серийного коммерческого производства, а также работы, созданные более трех лет назад на момент подачи заявки. Кроме того, не рассматриваются произведения, которые уже были показаны на крупных выставках или участвовали в других конкурсах, чтобы представить публике действительно новые и ранее не экспонировавшиеся работы. Есть и ограничение по размеру: длина, ширина и высота объектов не должны превышать 70 см.','https://www.theartnewspaper.ru/media/original_images/35568__Nevskaya_perspektiva_Bykov_5_copy.jpg','2026-09-30T05:47:00+00:00','dropped','2026-09-30T09:32:12.063374+00:00',NULL,NULL,0,'culture');
 INSERT INTO "queue" VALUES(117,'https://lgz.ru/news/vse-na-bort/','Литературная газета','Все на борт!','XVI Всероссийский форум-фестиваль «Капитан Грэй» пройдёт с 1 по 6 октября в Мурманской области. В этом году фестиваль приурочен к Году единства народов России и к 110‑летию Мурманска.
 
-На фестиваль поступило свыше 1300 заявок из 81 региона страны и 16 зарубежных стран.','https://lgz.ru/local/templates/lgz/img/logo.svg','2026-09-30T13:00:23+04:00','candidate','2026-09-30T10:32:33.872011+00:00',NULL,NULL,0,'culture');
+На фестиваль поступило свыше 1300 заявок из 81 региона страны и 16 зарубежных стран.','https://lgz.ru/local/templates/lgz/img/logo.svg','2026-09-30T13:00:23+04:00','dropped','2026-09-30T10:32:33.872011+00:00',NULL,NULL,0,'culture');
 INSERT INTO "queue" VALUES(118,'http://belcanto.ru/26093001.html','Belcanto.ru','Опера Доницетти «Анна Болейн» на сцене Мариинского театра','6 и 8 октября на сцене Мариинского-2 пройдут гастроли Московского академического музыкального театра им. Станиславского и Немировича-Данченко.
 
 Коллектив представит петербургскую премьеру постановки оперы Доницетти «Анна Болейн» . В титульной партии дважды выступит народная артистка России Хибла Герзмава .
@@ -304,6 +304,7 @@ INSERT INTO "queue" VALUES(164,'https://lenta.ru/articles/2026/10/01/v-rossii-sn
 INSERT INTO "queue" VALUES(165,'https://muzlifemagazine.ru/aleksandr-sladkovskiy-prodirizhirova/','Музыкальная жизнь','Александр Сладковский продирижировал сочинениями Стравинского, Боттезини и Шостаковича в Бари','26 сентября в Театре Петруцелли в итальянском городе Бари местный Симфонический оркестр сыграл программу под управлением известного российского дирижера Александра Сладковского.','https://muzlifemagazine.ru/wp-content/uploads/2026/10/Sladkovskiy1.jpg','2026-09-30T23:35:07+00:00','candidate','2026-10-01T00:32:05.008685+00:00',NULL,NULL,0,'classical');
 INSERT INTO "queue" VALUES(166,'https://www.kommersant.ru/doc/8990926','Коммерсантъ — Культура','Sotheby''s выставит на торги коллекцию с редкими работами ван Гога и Сезанна','Аукционный дом Sotheby''s выставит на торги 12 картин художников-импрессионистов и модернистов XIX-XX веков. Работы хранились в собрании аргентинского коллекционера Нелли Арриеты де Блакье, скончавшейся в 2020 году.','https://iv.kommersant.ru/SocialPics/8990926_49_0_2036088190','2026-10-01T01:42:59+00:00','candidate','2026-10-01T02:32:10.922290+00:00',NULL,NULL,0,'culture');
 INSERT INTO "queue" VALUES(167,'https://portal-kultura.ru/articles/svoy/378990-podari-mne-tsvetochek-alenkiy-kakoy-otvet-dal-sergey-aksakov-karamzinu-i-vsem-nashim-zapadnikam/','Газета «Культура»','Подари мне цветочек аленький: какой ответ дал Сергей Аксаков Карамзину и всем нашим западникам','235 лет назад, 20 сентября (1 октября) 1791 года, родился Сергей Аксаков. Он вошел в историю Отечества как автор удивительной, всеми любимой сказки, прекрасных автобиографических повествований, ценнейших для охотников и рыболовов наблюдений, а также как отец первых российских…','https://portal-kultura.ru/upload/iblock/6d5/RIA-RIA_518046.jpg','2026-10-01T03:57:00+00:00','candidate','2026-10-01T04:32:20.497545+00:00',NULL,NULL,0,'culture');
+INSERT INTO "queue" VALUES(168,'https://www.mk.ru/culture/2026/10/01/teatr-prodolzhaetsya-kakim-stal-novyy-sezon-teatra-studii-vsevoloda-shilovskogo.html','МК — Культура','Театр продолжается: каким стал новый сезон Театра-студии Всеволода Шиловского','В афише как возвращение спектаклей, созданных при жизни Всеволода Шиловского, так и новые постановки. Одной из первых премьер стала комедия Валентина Катаева «Квадратура круга» - пьеса из репертуара старого МХАТа. В ближайшее время зрителей также ждут «Любовь и голуби» Владимира…','https://static.mk.ru/upload/entities/2026/09/30/14/articles/facebookPicture/1e/b6/67/d2/a3b62241f444e5d91c07ed915a582d69.jpg','2026-10-01T05:00:00+00:00','candidate','2026-10-01T05:32:32.557750+00:00',NULL,NULL,0,'culture');
 CREATE TABLE seen ( url TEXT PRIMARY KEY, title_key TEXT, source TEXT, added_at TEXT);
 INSERT INTO "seen" VALUES('https://godliteratury.ru/articles/2026/09/27/rodina-ty-odna-bessmertna-kak-mat-effendi-kapiev','родинатыоднабессмертнакакматьэффендикапиев','Год литературы','2026-09-27T14:37:39.700389+00:00');
 INSERT INTO "seen" VALUES('https://gorky.media/reviews/tsirkumlatorii-stalin-knigi-nedeli','циркумлаторийсталинкнигинедели','Горький','2026-09-27T14:37:39.707704+00:00');
@@ -558,6 +559,7 @@ INSERT INTO "seen" VALUES('https://lenta.ru/articles/2026/10/01/v-rossii-snyali-
 INSERT INTO "seen" VALUES('https://muzlifemagazine.ru/aleksandr-sladkovskiy-prodirizhirova','александрсладковскийпродирижировалсочинениямистравинскогоботтезиниишостаковичавб','Музыкальная жизнь','2026-10-01T00:32:05.010730+00:00');
 INSERT INTO "seen" VALUES('https://kommersant.ru/doc/8990926','sothebysвыставитнаторгиколлекциюсредкимиработамивангогаисезанна','Коммерсантъ — Культура','2026-10-01T02:32:10.924952+00:00');
 INSERT INTO "seen" VALUES('https://portal-kultura.ru/articles/svoy/378990-podari-mne-tsvetochek-alenkiy-kakoy-otvet-dal-sergey-aksakov-karamzinu-i-vsem-nashim-zapadnikam','подаримнецветочекаленькийкакойответдалсергейаксаковкарамзинуивсемнашимзападникам','Газета «Культура»','2026-10-01T04:32:20.498971+00:00');
+INSERT INTO "seen" VALUES('https://mk.ru/culture/2026/10/01/teatr-prodolzhaetsya-kakim-stal-novyy-sezon-teatra-studii-vsevoloda-shilovskogo.html','театрпродолжаетсякакимсталновыйсезонтеатрастудиивсеволодашиловского','МК — Культура','2026-10-01T05:32:32.567199+00:00');
 CREATE TABLE state (key TEXT PRIMARY KEY, value TEXT);
 INSERT INTO "state" VALUES('last_digest','2026-09-27');
 INSERT INTO "state" VALUES('last_post','2026-09-30T17:01:07.645814+00:00');
@@ -566,10 +568,10 @@ INSERT INTO "state" VALUES('registry_errors','{}');
 INSERT INTO "state" VALUES('registry_sizes','{"extremist": 154, "foreign_agents": 329, "undesirable": 140}');
 INSERT INTO "state" VALUES('registry_last','2026-09-30T17:30:57.090358+00:00');
 INSERT INTO "state" VALUES('registry_errors_notified','{}');
-INSERT INTO "state" VALUES('last_check','2026-10-01T04:32:20.501785+00:00');
 INSERT INTO "state" VALUES('moderation','1');
+INSERT INTO "state" VALUES('last_check','2026-10-01T05:32:32.570136+00:00');
 CREATE INDEX idx_queue_status ON queue(status);
 CREATE INDEX idx_title ON seen(title_key);
 DELETE FROM "sqlite_sequence";
-INSERT INTO "sqlite_sequence" VALUES('queue',167);
+INSERT INTO "sqlite_sequence" VALUES('queue',168);
 COMMIT;
