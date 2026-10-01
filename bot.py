@@ -577,6 +577,8 @@ class Bot:
         return updates
 
     def handle(self, upd: dict) -> None:
+        kind = next((k for k in upd if k != "update_id"), "?")
+        what = (upd.get("callback_query") or {}).get("data") or (upd.get("message") or {}).get("text") or ""
         try:
             if "callback_query" in upd:
                 self.on_callback(upd["callback_query"])
@@ -584,8 +586,19 @@ class Bot:
                 self.on_reactions(upd["message_reaction_count"])
             elif (msg := upd.get("message")) and msg.get("text"):
                 self.on_message(msg)
-        except Exception:
+            self.journal(f"{kind} {what[:40]}: ok")
+        except Exception as exc:
             log.exception("Ошибка обработки обновления")
+            self.journal(f"{kind} {what[:40]}: ОШИБКА {type(exc).__name__}: {str(exc)[:300]}")
+
+    def journal(self, line: str) -> None:
+        """Последние события в базе (state.sql) — чтобы видеть, что происходит на сервере."""
+        try:
+            events = json.loads(self.queue.get_state("journal") or "[]")
+            events.append(f"{utcnow():%Y-%m-%d %H:%M} {line}")
+            self.queue.set_state("journal", json.dumps(events[-30:], ensure_ascii=False))
+        except Exception:
+            log.exception("journal")
 
     def on_message(self, msg: dict) -> None:
         if msg["chat"]["type"] != "private":
