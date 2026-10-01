@@ -1,5 +1,6 @@
-feedparser>=6.0
-requests>=2.31
-beautifulsoup4>=4.12
-PyYAML>=6.0
-tzdata>=2024.1
+# Точные версии, с которыми бот проверен (обновлять осознанно)
+feedparser==6.0.14
+requests==2.34.2
+beautifulsoup4==4.15.0
+PyYAML==6.0.3
+tzdata==2026.4

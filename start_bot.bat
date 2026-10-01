@@ -1,9 +1,17 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-python -m pip install -q -r requirements.txt
+title LitBot
+
+if not exist ".venv\Scripts\python.exe" (
+    echo Бот ещё не установлен на этом компьютере: сначала запустите install.bat
+    pause
+    exit /b 1
+)
+
 :loop
-python bot.py
-echo Bot stopped. Restarting in 30 seconds... (Ctrl+C to exit)
+".venv\Scripts\python.exe" bot.py
+echo.
+echo Бот остановился. Перезапуск через 30 секунд... (закройте окно, чтобы выйти)
 timeout /t 30 >nul
 goto loop

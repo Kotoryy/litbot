@@ -16,6 +16,7 @@ import argparse
 import html
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import re
 import sqlite3
@@ -581,6 +582,8 @@ class Bot:
     def handle(self, upd: dict) -> None:
         kind = next((k for k in upd if k != "update_id"), "?")
         what = (upd.get("callback_query") or {}).get("data") or (upd.get("message") or {}).get("text") or ""
+        if kind != "message_reaction_count":
+            log.info("Получено от Telegram: %s %s", kind, what[:40])
         try:
             if "callback_query" in upd:
                 self.on_callback(upd["callback_query"])
@@ -882,8 +885,12 @@ def main() -> None:
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8")
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-                        format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
+    handlers: list[logging.Handler] = [logging.StreamHandler()]
+    if not args.once:  # постоянный режим — дублируем лог в файл (до 3 файлов по 1 МБ)
+        handlers.append(RotatingFileHandler(Path(__file__).resolve().parent / "bot.log",
+                                            maxBytes=1_000_000, backupCount=2, encoding="utf-8"))
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, handlers=handlers,
+                        format="%(asctime)s %(levelname)s %(message)s", datefmt="%d.%m %H:%M:%S")
     for noisy in ("urllib3", "charset_normalizer"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
