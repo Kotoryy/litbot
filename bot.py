@@ -558,6 +558,8 @@ class Bot:
         self.queue.set_posted(row["id"], message_id)
         self.queue.set_state("last_post", utcnow().isoformat())
         log.info("Опубликовано: %s", art.title)
+        if self.moderation:
+            self.fill_reviews()  # место освободилось — следующий кандидат на одобрение
         return True
 
     # ---------- updates

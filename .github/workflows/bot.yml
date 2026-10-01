@@ -1,9 +1,11 @@
 name: Автопостинг
 
+# ОТКЛЮЧЕНО: бот работает на компьютере (start_bot.bat) — там кнопки модерации
+# срабатывают сразу. Чтобы вернуть запуск на GitHub: раскомментировать schedule,
+# убрать «if: false» у задачи ниже и перенести базу в state.sql.
 on:
-  schedule:
-    # каждые 15 минут, но не в «ровные» минуты — на них GitHub перегружен и пропускает запуски
-    - cron: "7,22,37,52 * * * *"
+  # schedule:
+  #   - cron: "7,22,37,52 * * * *"
   workflow_dispatch:          # кнопка «Run workflow» для ручного запуска
 
 permissions:
@@ -15,6 +17,7 @@ concurrency:
 
 jobs:
   run:
+    if: false                 # отключено — см. комментарий вверху
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
