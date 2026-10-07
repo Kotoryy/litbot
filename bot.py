@@ -218,6 +218,9 @@ class Bot:
         self.topic_tags = {name: t.get("tag", "") for name, t in (cfg.get("topics") or {}).items()}
         # сколько дней статья может ждать в очереди (у джаза новости редкие — нужен запас)
         self.queue_max_age = self.bcfg.get("max_age_in_queue_days", 7)
+        # свой срок для отдельных источников (например, статьи своего блога живут дольше новостей)
+        self.source_queue_age = {s["name"]: s["queue_max_age_days"] for s in cfg["sources"]
+                                 if s.get("queue_max_age_days")}
         self.digest_cfg = cfg.get("digest") or {}
         self.registry_cfg = cfg.get("registry_check") or {}
         # сколько статей каждой темы держать у админа на одобрении (вместе с одобренными)
@@ -482,6 +485,10 @@ class Bot:
                 log.warning("не удалось отправить на модерацию %s: %s", admin, exc)
         return sent
 
+    def queue_age(self, row: sqlite3.Row) -> float:
+        """Сколько дней статья может ждать в очереди: у источника может быть свой срок."""
+        return self.source_queue_age.get(row["source"], self.queue_max_age)
+
     def fill_reviews(self) -> None:
         """Держит у админа на одобрении по review_per_topic статей каждой темы.
 
@@ -500,7 +507,7 @@ class Bot:
                 if need <= 0:
                     break
                 art = row_to_article(row)
-                if row["source"] in blocked or self.flt.too_old(art, self.queue_max_age):
+                if row["source"] in blocked or self.flt.too_old(art, self.queue_age(row)):
                     self.queue.set_status(row["id"], "dropped")
                     continue
                 if self.send_review(row["id"], art):
@@ -530,7 +537,7 @@ class Bot:
         while rows := self.upcoming()[:1]:
             row = rows[0]
             art = row_to_article(row)
-            if self.flt.too_old(art, self.queue_max_age):
+            if self.flt.too_old(art, self.queue_age(row)):
                 self.queue.set_status(row["id"], "dropped")
                 log.info("Устарело, пропускаю: %s", art.title)
                 continue
